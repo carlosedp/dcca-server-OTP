@@ -19,6 +19,10 @@ Or use the provided Makefile:
     make compile
     make shell
 
+A release is also available and built with the commands above. To load the application use:
+
+    ./rel/dccaserver/dccaserver/bin/dccaserver console
+
 ## Testing
 
 To test the server, use the client module [diameter-dcca](https://github.com/carlosedp/diameter-dcca) from my other project or Seagull.

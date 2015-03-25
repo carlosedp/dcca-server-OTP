@@ -1,0 +1,15 @@
+%-*- mode: erlang -*-
+{application, dccaserver,
+ [
+  {description, "Diameter DCCA Server"},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  diameter
+                 ]},
+  {mod, { dccaserver_app, []}},
+  {env, []}
+ ]}.
+% vim: set filetype=erlang tabstop=2:

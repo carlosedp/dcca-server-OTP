@@ -17,17 +17,18 @@
 -export([code_change/3]).
 -export([stop/0, terminate/2]).
 
-% TODO: If unnamed server, remove definition below.
 -define(SERVER, ?MODULE).
 
 %%%.
 %%%'   Diameter Application Definitions
+
+%% Diameter stats
 -define(DIA_STATS_TAB, dcca_stats).
 -define(DIA_STATS_COUNTERS, [event_OK, event_ERR]).
 
 %% Server parameters
--define(SVC_NAME,     ?MODULE).
--define(APP_ALIAS,    ?MODULE).
+-define(SVC_NAME, ?MODULE).
+-define(APP_ALIAS, ?MODULE).
 -define(CALLBACK_MOD, server_cb).
 -define(DIAMETER_DICT_CCRA, rfc4006_cc_Gy).
 
@@ -74,28 +75,8 @@ init(State) ->
   common_stats:init(?DIA_STATS_TAB, ?DIA_STATS_COUNTERS),
   diameter:start_service(SvcName, ?SERVICE(SvcName)),
   listen({address, ?DIAMETER_PROTO, ?DIAMETER_IP, ?DIAMETER_PORT}),
-  error_logger:info_msg("Diameter DCCA Application Listening.~n"),
+  error_logger:info_msg("Diameter DCCA Application Listening on port ~p~n", [?DIAMETER_PORT]),
   {ok, State}.
-
-
-% init(State) ->
-%         SvcName = ?MODULE,
-%         SvcOpts = [{'Origin-Host', ?ORIGIN_HOST},
-%                         {'Origin-Realm', ?ORIGIN_REALM},
-%                         {'Vendor-Id', ?VENDOR_ID},
-%                         {'Product-Name', "Server"},
-%                         {'Auth-Application-Id', [?DCCA_APPLICATION_ID]},
-%                         {application, [{alias, ?APP_ALIAS},
-%                                        {dictionary, ?DIAMETER_DICT_CCRA},
-%                                        {module, ?CALLBACK_MOD}]}],
-%         {ok, IP} = inet_parse:address(?DIAMETER_IP),
-%         TransportOpts =  [{transport_module, tmod(?DIAMETER_PROTO)},
-%                                         {transport_config, [{reuseaddr, true},
-%                                         {ip, IP}, {port, ?DIAMETER_PORT}]}],
-%         diameter:start_service(SvcName, SvcOpts),
-%         diameter:add_transport(SvcName, {listen, TransportOpts}),
-%        {ok, State}.
-
 
 %% @callback gen_server
 handle_call(_Req, _From, State) ->
@@ -116,7 +97,10 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% @callback gen_server
 terminate(normal, _State) ->
-  ok;
+    common_stats:terminate(?DIA_STATS_TAB),
+    diameter:stop_service(?SVC_NAME),
+    error_logger:info_msg("Diameter DCCA Application stopped.~n"),
+    ok;
 terminate(shutdown, _State) ->
   ok;
 terminate({shutdown, _Reason}, _State) ->
@@ -137,15 +121,6 @@ listen(Name, {address, Protocol, IPAddr, Port}) ->
 
 listen(Address) ->
     listen(?SVC_NAME, Address).
-
-%% stop/1
-
-% stop(Name) ->
-%     %common_stats:terminate(?DIA_STATS_TAB),
-%     diameter:stop_service(Name).
-
-% stop() ->
-%     stop(?SVC_NAME).
 
 %% Convert connection type
 tmod(tcp)  -> diameter_tcp;

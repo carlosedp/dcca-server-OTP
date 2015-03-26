@@ -31,7 +31,7 @@ BEAMS = $(DICTS:%=%.beam)
 COMMON = diameter_gen_base_rfc6733
 
 %.erl: %.dia
-	./diameterc --name $(basename $@) \
+	escript diameterc --name $(basename $@) \
 	          --prefix $(basename $@) \
 	          --inherits common/$(COMMON) \
 	  $<

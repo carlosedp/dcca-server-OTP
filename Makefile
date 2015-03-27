@@ -1,18 +1,25 @@
+REBAR = escript rebar
+
+.PHONY: clean
+
 all: deps compile
 
 deps:
-	@ escript rebar get-deps
+	${REBAR} get-deps
 
-compile:
+compile: deps
 	@ $(MAKE) -C apps/dccaserver/src/diameter-dict
-	@ escript rebar compile
+	${REBAR} compile
 
 shell:
 	erl -pa deps/*/ebin apps/*/ebin -s startapp start
 
 clean:
 	$(MAKE) -C apps/dccaserver/src/diameter-dict clean
-	@ escript rebar clean
+	${REBAR} clean
+
+distclean: clean
+	@${REBAR} delete-deps
 
 rel: compile
-	@ escript rebar generate
+	${REBAR} generate

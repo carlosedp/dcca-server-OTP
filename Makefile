@@ -1,6 +1,6 @@
 REBAR = escript rebar
 
-.PHONY: clean
+.PHONY: clean deps
 
 all: deps compile
 

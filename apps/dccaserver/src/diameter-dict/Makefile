@@ -21,9 +21,7 @@
 # Build example dictionaries. Assumes erlc and diameterc are on PATH.
 #
 
-DICTS = rfc4005_nas \
-        rfc4006_cc \
-        rfc4006_cc_Gy
+DICTS = rfc4006_cc_Gy
 
 FILES = $(DICTS:%=%.dia)
 BEAMS = $(DICTS:%=%.beam)

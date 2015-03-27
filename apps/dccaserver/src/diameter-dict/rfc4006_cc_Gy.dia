@@ -24,7 +24,7 @@
 @id 4
 
 @inherits common
-@inherits rfc4005_nas  Filter-Id
+;;@inherits rfc4005_nas  Filter-Id
 
 @vendor 10415 3GPP
 
@@ -39,7 +39,8 @@
 ;; ===========================================================================
 
 @avp_types
-
+;; Filter-Id below copied from rfc4005 to avoid inheriting
+   Filter-Id                         11     UTF8String    M
    CC-Correlation-Id                 411    OctetString   -
    CC-Input-Octets                   412    Unsigned64    M
    CC-Money                          413    Grouped       M

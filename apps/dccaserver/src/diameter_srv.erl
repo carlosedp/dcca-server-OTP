@@ -9,7 +9,7 @@
 -behaviour(gen_server).
 
 -include_lib("diameter/include/diameter.hrl").
--include_lib("diameter/include/diameter_gen_base_rfc3588.hrl").
+-include_lib("diameter/include/diameter_gen_base_rfc6733.hrl").
 -include_lib("diameter_settings.hrl").
 
 -export([start_link/0]).

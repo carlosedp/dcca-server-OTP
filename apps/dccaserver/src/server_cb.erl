@@ -9,7 +9,7 @@
 
 -include_lib("diameter/include/diameter.hrl").
 -include_lib("diameter/include/diameter_gen_base_rfc6733.hrl").
--include_lib("diameter-dict/rfc4006_cc_Gy.hrl").
+-include_lib("include/rfc4006_cc_Gy.hrl").
 -include_lib("diameter_settings.hrl").
 
 -define(DIA_STATS_TAB, dcca_stats).
@@ -52,11 +52,11 @@ handle_error(_Reason, _Request, _SvcName, _Peer) ->
 
 %% A request whose decode was successful ...
 handle_request(#diameter_packet{msg = Req, errors = []}, _SvcName, {_, Caps})
-  when is_record(Req, rfc4006_cc_Gy_CCR) ->
+  when is_record(Req, 'CCR') ->
     #diameter_caps{origin_host = {OH,_},
                    origin_realm = {OR,_}
     } = Caps,
-    #rfc4006_cc_Gy_CCR{
+    #'CCR'{
        'Session-Id' = SessionId,
        'Auth-Application-Id' = ?DCCA_APPLICATION_ID,
        'CC-Request-Type' = ReqType,
@@ -70,7 +70,7 @@ handle_request(#diameter_packet{msg = Req, errors = []}, _SvcName, {_, Caps})
     } = Req,
     MSISDN = getSubscriptionId(?'MSISDN', Subscription),
     IMSI = getSubscriptionId(?'IMSI', Subscription),
-    %io:format("Record:~n~p~n", [lists:zip(record_info(fields, rfc4006_cc_Gy_CCR), tl(tuple_to_list(Req)))]),
+    %io:format("Record:~n~p~n", [lists:zip(record_info(fields, 'CCR'), tl(tuple_to_list(Req)))]),
 
     error_logger:info_msg(
         "
@@ -87,11 +87,11 @@ handle_request(#diameter_packet{msg = Req, errors = []}, _SvcName, {_, Caps})
 %% but these are 5xxx errors for which we must contruct a reply.
 %% diameter will set Result-Code and Failed-AVP's.
 handle_request(#diameter_packet{msg = Req, errors = Err}, _SvcName, {_, Caps})
-  when is_record(Req, rfc4006_cc_Gy_CCR) ->
+  when is_record(Req, 'CCR') ->
     #diameter_caps{origin_host = {OH,_},
                    origin_realm = {OR,_}}
         = Caps,
-    #rfc4006_cc_Gy_CCR{'Session-Id' = SessionId,
+    #'CCR'{'Session-Id' = SessionId,
                     'CC-Request-Type' = ReqType,
                     'CC-Request-Number'= ReqNum,
                     'Multiple-Services-Credit-Control' = MSCC,
@@ -118,8 +118,8 @@ handle_request(#diameter_packet{}, _SvcName, {_,_}) ->
 %% Internal server functions
 
 %% Get Subscription Type from Subs list
-getSubscriptionId(Type, [Subs = #'rfc4006_cc_Gy_Subscription-Id'{'Subscription-Id-Type' = Type}|_]) ->
-    Subs#'rfc4006_cc_Gy_Subscription-Id'.'Subscription-Id-Data';
+getSubscriptionId(Type, [Subs = #'Subscription-Id'{'Subscription-Id-Type' = Type}|_]) ->
+    Subs#'Subscription-Id'.'Subscription-Id-Data';
 
 getSubscriptionId(Type, [_|T]) ->
     getSubscriptionId(Type, T);
@@ -132,7 +132,7 @@ process_mscc(ReqType, [MSCC|T], SessionData) ->
     common_stats:inc(?DIA_STATS_TAB, dia_input_update_OK),
     % io:format("Process_MSCC ~p~n", [MSCC]),
     % io:format("Process_MSCC T ~p~n", [T]),
-    #'rfc4006_cc_Gy_Multiple-Services-Credit-Control' {
+    #'Multiple-Services-Credit-Control' {
         'Used-Service-Unit' = USU,
         'Requested-Service-Unit' = RSU,
         'Service-Identifier' = [ServiceId],
@@ -148,14 +148,14 @@ process_mscc(ReqType, [MSCC|T], SessionData) ->
         {[_], [_]} ->
             % Have RSU. Have USU (Next interrogation)
             error_logger:info_msg("Have RSU. Have USU (Next interrogation)~n"),
-            [#'rfc4006_cc_Gy_Used-Service-Unit' {
+            [#'Used-Service-Unit' {
              'CC-Total-Octets' = [UsedUnits]
             }] = USU,
             ocs ! {self(), {update, SessionData, {UsedUnits, ServiceId, RatingGroup}}};
         {[], [_]} ->
             % No RSU. Have USU (Last interrogation)
             error_logger:info_msg("No RSU. Have USU (Last interrogation)~n"),
-            [#'rfc4006_cc_Gy_Used-Service-Unit' {
+            [#'Used-Service-Unit' {
              'CC-Total-Octets' = [UsedUnits]
             }] = USU,
             ocs ! {self(), {terminate, SessionData, {UsedUnits, ServiceId, RatingGroup}}}
@@ -177,7 +177,7 @@ process_mscc(_, [], _) ->
 
 answer(ok, ReqType, ReqNum, SessionId, OH, OR, MSCC) ->
   common_stats:inc(?DIA_STATS_TAB, event_OK),
-  CCA = #rfc4006_cc_Gy_CCA {
+  CCA = #'CCA' {
     'Result-Code' = 2001, %% DIAMETER_SUCCESS
     'Origin-Host' = OH,
     'Origin-Realm' = OR,
@@ -192,7 +192,7 @@ answer(ok, ReqType, ReqNum, SessionId, OH, OR, MSCC) ->
 
 answer(err, ReqType, ReqNum, SessionId, OH, OR, []) ->
     common_stats:inc(?DIA_STATS_TAB, event_ERR),
-    CCA = #rfc4006_cc_Gy_CCA {
+    CCA = #'CCA' {
       'Result-Code' = 5012, %% DIAMETER_UNABLE_TO_COMPLY
       'Origin-Host' = OH,
       'Origin-Realm' = OR,
@@ -208,8 +208,8 @@ mscc_answer([MSCC|T]) ->
     % io:format("MSCC: ~p~n",[MSCC]),
     % io:format("T: ~w~n",[T]),
     {ServiceId, RatingGroup, GrantedUnits, _ResultCode} = MSCC,
-    [#'rfc4006_cc_Gy_Multiple-Services-Credit-Control' {
-      'Granted-Service-Unit' = [#'rfc4006_cc_Gy_Granted-Service-Unit' {
+    [#'Multiple-Services-Credit-Control' {
+      'Granted-Service-Unit' = [#'Granted-Service-Unit' {
         'CC-Total-Octets' = [GrantedUnits],
         'CC-Input-Octets' = [],
         'CC-Output-Octets' = [],

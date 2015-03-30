@@ -23,7 +23,7 @@
 
 @id 4
 
-@inherits common
+@inherits diameter_gen_base_rfc6733
 ;;@inherits rfc4005_nas  Filter-Id
 
 @vendor 10415 3GPP

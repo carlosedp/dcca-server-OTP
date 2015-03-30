@@ -72,3 +72,7 @@ checkplt: buildplt
 
 shell:
 	erl -pa deps/*/ebin apps/*/ebin -boot start_sasl -s startapp start
+
+wshell:
+	werl -pa deps/*/ebin apps/*/ebin -boot start_sasl -s startapp start &
+

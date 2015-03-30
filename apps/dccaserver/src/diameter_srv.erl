@@ -12,10 +12,18 @@
 -include_lib("diameter/include/diameter_gen_base_rfc6733.hrl").
 -include_lib("diameter_settings.hrl").
 
+%% ------------------------------------------------------------------
+%% API Function Exports
+%% ------------------------------------------------------------------
 -export([start_link/0]).
+-export([stop/0, terminate/2]).
+
+
+%% ------------------------------------------------------------------
+%% gen_server Function Exports
+%% ------------------------------------------------------------------
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2]).
 -export([code_change/3]).
--export([stop/0, terminate/2]).
 
 -define(SERVER, ?MODULE).
 
@@ -47,6 +55,9 @@
                         }]).
 
 
+%% ------------------------------------------------------------------
+%% API Function Definitions
+%% ------------------------------------------------------------------
 
 %% @doc starts gen_server implementation and caller links to the process too.
 -spec start_link() -> {ok, Pid} | ignore | {error, Error}
@@ -63,11 +74,9 @@ start_link() ->
 stop() ->
   gen_server:cast(?SERVER, stop).
 
-% TODO: add more public API here...
-
-%%%.
-%%%'   CALLBACKS
-%% @callback gen_server
+%% ------------------------------------------------------------------
+%% gen_server Function Definitions
+%% ------------------------------------------------------------------
 init(State) ->
   SvcName = ?MODULE,
   OCS = ocs:start(ocs_intm),
@@ -107,11 +116,12 @@ terminate({shutdown, _Reason}, _State) ->
   ok;
 terminate(_Reason, _State) ->
   ok.
-%%%.
-%%%'   PRIVATE FUNCTIONS
+
+%% ------------------------------------------------------------------
+%% Internal Function Definitions
+%% ------------------------------------------------------------------
 
 %% listen/2
-
 listen(Name, {address, Protocol, IPAddr, Port}) ->
     {ok, IP} = inet_parse:address(IPAddr),
     TransportOpts =  [{transport_module, tmod(Protocol)},

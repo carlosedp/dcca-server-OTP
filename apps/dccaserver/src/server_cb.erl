@@ -115,7 +115,10 @@ handle_request(#diameter_packet{}, _SvcName, {_,_}) ->
     error_logger:error_msg("Unsupported message.~n"),
     discard.
 
-%% Internal server functions
+%% ------------------------------------------------------------------
+%% Internal Function Definitions
+%% ------------------------------------------------------------------
+
 
 %% Get Subscription Type from Subs list
 getSubscriptionId(Type, [Subs = #'Subscription-Id'{'Subscription-Id-Type' = Type}|_]) ->

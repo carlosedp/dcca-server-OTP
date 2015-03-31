@@ -26,12 +26,12 @@
 
 -define(UNEXPECTED, erlang:error({unexpected, ?MODULE, ?LINE})).
 
-peer_up(_SvcName, {PeerRef, _}, State) ->
-    error_logger:info_msg("Peer up: ~p~n", [PeerRef]),
+peer_up(_SvcName, {PeerRef, Caps}, State) ->
+    error_logger:info_msg("Peer up: ~p - ~p~n", [PeerRef, Caps]),
     State.
 
-peer_down(_SvcName, {PeerRef, _}, State) ->
-    error_logger:info_msg("Peer down: ~p~n", [PeerRef]),
+peer_down(_SvcName, {PeerRef, Caps}, State) ->
+    error_logger:info_msg("Peer down: ~p - ~p~n", [PeerRef, Caps]),
     State.
 
 pick_peer(_, _, _SvcName, _State) ->

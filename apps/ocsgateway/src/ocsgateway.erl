@@ -48,7 +48,7 @@ start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
 ocs_charge(Request) ->
-    gen_server:call(?SERVER, Request).
+    gen_server:call(?SERVER, {intm, Request}).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Definitions
@@ -57,7 +57,7 @@ ocs_charge(Request) ->
 init(Args) ->
     {ok, Args}.
 
-handle_call({Event, SessionData, EventData}, _From, State) ->
+handle_call({intm, {Event, SessionData, EventData}}, _From, State) ->
     {APN, IMSI, MSISDN, Location, SessionId, EventTimestamp} = SessionData,
     {ConsumedResources, ServiceID, RatingGroup} = EventData,
     StartTime = timestamp(EventTimestamp),

@@ -21,6 +21,7 @@ Or use the provided Makefile:
 
 A release is also available and built with the commands above. To load the application use:
 
+    make rel
     ./rel/dccaserver/dccaserver/bin/dccaserver console
 
 ## Testing

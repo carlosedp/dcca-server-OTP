@@ -5,6 +5,7 @@
 %% @author Carlos Eduardo de Paula <carlosedp@gmail.com>
 %% @copyright 2015 Carlos Eduardo de Paula
 %% @doc gen_server
+%%
 %% This file is provided to you under the Apache License,
 %% Version 2.0 (the "License"); you may not use this file
 %% except in compliance with the License. You may obtain

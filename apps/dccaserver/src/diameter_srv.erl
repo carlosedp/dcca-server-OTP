@@ -95,8 +95,6 @@ stop() ->
 %% ------------------------------------------------------------------
 init(State) ->
   SvcName = ?MODULE,
-  OCS = ocs:start(ocs_intm),
-  register(ocs, OCS),
   common_stats:init(?DIA_STATS_TAB, ?DIA_STATS_COUNTERS),
   diameter:start_service(SvcName, ?SERVICE(SvcName)),
   listen({address, ?DIAMETER_PROTO, ?DIAMETER_IP, ?DIAMETER_PORT}),

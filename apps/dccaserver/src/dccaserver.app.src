@@ -31,7 +31,8 @@
   {applications, [
                   kernel,
                   stdlib,
-                  diameter
+                  diameter,
+                  ocsgateway
                  ]},
   {mod, { dccaserver_app, []}},
   {env, []}

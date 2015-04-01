@@ -29,4 +29,5 @@
 
 start() ->
     application:start(diameter),
+    application:start(ocsgateway),
     application:start(dccaserver).

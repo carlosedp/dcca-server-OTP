@@ -1,4 +1,5 @@
 ebin/*
 *.beam
 deps/*
+rel/dccaserver/dccaserver
 erl_crash.dump

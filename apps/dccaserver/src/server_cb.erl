@@ -165,25 +165,25 @@ process_mscc(ReqType, [MSCC|T], SessionData) ->
         {[_], []} ->
             % Have RSU. No USU (First interrogation)
             error_logger:info_msg("Have RSU. No USU (First interrogation)~n"),
-            ocs ! {self(), {initial, SessionData, {0, ServiceId, RatingGroup}}};
+            {ResultCode, GrantedUnits} = ocsgateway:ocs_charge({initial, SessionData, {0, ServiceId, RatingGroup}});
         {[_], [_]} ->
             % Have RSU. Have USU (Next interrogation)
             error_logger:info_msg("Have RSU. Have USU (Next interrogation)~n"),
             [#'Used-Service-Unit' {
              'CC-Total-Octets' = [UsedUnits]
             }] = USU,
-            ocs ! {self(), {update, SessionData, {UsedUnits, ServiceId, RatingGroup}}};
+            {ResultCode, GrantedUnits} = ocsgateway:ocs_charge({update, SessionData, {UsedUnits, ServiceId, RatingGroup}});
         {[], [_]} ->
             % No RSU. Have USU (Last interrogation)
             error_logger:info_msg("No RSU. Have USU (Last interrogation)~n"),
             [#'Used-Service-Unit' {
              'CC-Total-Octets' = [UsedUnits]
             }] = USU,
-            ocs ! {self(), {terminate, SessionData, {UsedUnits, ServiceId, RatingGroup}}}
+            {ResultCode, GrantedUnits} = ocsgateway:ocs_charge({terminate, SessionData, {UsedUnits, ServiceId, RatingGroup}})
     end,
-    receive
-        {ResultCode, GrantedUnits} -> {ResultCode, GrantedUnits}
-    end,
+    % receive
+    %     {ResultCode, GrantedUnits} -> {ResultCode, GrantedUnits}
+    % end,
     [{ServiceId, RatingGroup, GrantedUnits, ResultCode}|process_mscc(ReqType, T, SessionData)];
 
 process_mscc(_, [], _) ->

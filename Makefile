@@ -6,7 +6,7 @@ endif
 ERLC				= erlc
 REBAR 				= escript rebar
 EBIN_DIRS		:= $(wildcard deps/*/ebin)
-#APPS				:= $(shell dir apps)
+APPS				:= $(shell dir apps)
 REL_DIR     = rel
 NODE				= {{name}}
 REL					= {{name}}
@@ -56,11 +56,11 @@ restart: $(SCRIPT_PATH)
 reboot: $(SCRIPT_PATH)
 	@./$(SCRIPT_PATH) reboot
 
-#doc:
-#	$(REBAR) skip_deps=true doc
-#	for app in $(APPS); do \
-#		cp -R apps/$${app}/doc doc/$${app}; \
-#	done;
+doc:
+	$(REBAR) skip_deps=true doc
+	for app in $(APPS); do \
+		cp -R apps/$${app}/doc doc/$${app}; \
+	done;
 
 dev:
 	@erl -pa ebin include deps/*/ebin deps/*/include ebin include -boot start_sasl

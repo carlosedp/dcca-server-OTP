@@ -22,7 +22,7 @@
 %%
 %% -------------------------------------------------------------------
 
--module(diameter_srv).
+-module(dccaserver).
 -behaviour(gen_server).
 
 -include_lib("diameter/include/diameter.hrl").
@@ -33,7 +33,7 @@
 %% API Function Exports
 %% ------------------------------------------------------------------
 -export([start_link/0]).
--export([stop/0, terminate/2]).
+-export([start/0, stop/0, terminate/2]).
 
 
 %% ------------------------------------------------------------------
@@ -86,6 +86,15 @@ start_link() ->
   % gen_server:start_link(?MODULE, [], []). % for unnamed gen_server
   gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
+
+%% @doc starts gen_server implementation process
+-spec start()
+   -> ok
+    | {error, term()}.
+
+start() ->
+    start_link().
+
 %% @doc stops gen_server implementation process
 -spec stop() -> ok.
 stop() ->
@@ -99,7 +108,7 @@ init(State) ->
   common_stats:init(?DIA_STATS_TAB, ?DIA_STATS_COUNTERS),
   diameter:start_service(SvcName, ?SERVICE(SvcName)),
   listen({address, ?DIAMETER_PROTO, ?DIAMETER_IP, ?DIAMETER_PORT}),
-  error_logger:info_msg("Diameter DCCA Application Listening on port ~p~n", [?DIAMETER_PORT]),
+  lager:info("Diameter DCCA Application Listening on port ~p~n", [?DIAMETER_PORT]),
   {ok, State}.
 
 %% @callback gen_server
@@ -123,7 +132,7 @@ code_change(_OldVsn, State, _Extra) ->
 terminate(normal, _State) ->
     common_stats:terminate(?DIA_STATS_TAB),
     diameter:stop_service(?SVC_NAME),
-    error_logger:info_msg("Diameter DCCA Application stopped.~n"),
+    lager:info("Diameter DCCA Application stopped.~n"),
     ok;
 terminate(shutdown, _State) ->
   ok;

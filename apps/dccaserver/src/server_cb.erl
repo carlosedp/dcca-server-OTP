@@ -45,11 +45,11 @@
 -define(UNEXPECTED, erlang:error({unexpected, ?MODULE, ?LINE})).
 
 peer_up(_SvcName, {PeerRef, Caps}, State) ->
-    error_logger:info_msg("Peer up: ~p - ~p~n", [PeerRef, Caps]),
+    lager:info("Peer up: ~p - ~p~n", [PeerRef, Caps]),
     State.
 
 peer_down(_SvcName, {PeerRef, Caps}, State) ->
-    error_logger:info_msg("Peer down: ~p - ~p~n", [PeerRef, Caps]),
+    lager:info("Peer down: ~p - ~p~n", [PeerRef, Caps]),
     State.
 
 pick_peer(_, _, _SvcName, _State) ->
@@ -65,7 +65,7 @@ handle_answer(_Packet, _Request, _SvcName, _Peer) ->
     ?UNEXPECTED.
 
 handle_error(_Reason, _Request, _SvcName, _Peer) ->
-    error_logger:error_msg("Request error: ~p~n", [_Reason]),
+    lager:error("Request error: ~p~n", [_Reason]),
     ?UNEXPECTED.
 
 %% A request whose decode was successful ...
@@ -90,13 +90,13 @@ handle_request(#diameter_packet{msg = Req, errors = []}, _SvcName, {_, Caps})
     IMSI = getSubscriptionId(?'IMSI', Subscription),
     %io:format("Record:~n~p~n", [lists:zip(record_info(fields, 'CCR'), tl(tuple_to_list(Req)))]),
 
-    error_logger:info_msg(
+    lager:info(
         "
         ------------------------------> Req. Number ~p <------------------------------
         CCR OK: ~p
         MSCC: ~p
         ------------------------------------------------------------------------------
-        ", [ReqNum, Req, MSCC]),
+        ", [ReqNum, lager:pr(Req, ?MODULE), MSCC]),
     MSCC_Data = process_mscc(ReqType, MSCC, {APN, IMSI, MSISDN, "10.0.0.1", SessionId, EventTimestamp}),
     {reply, answer(ok, ReqType, ReqNum, SessionId, OH, OR, MSCC_Data)};
 
@@ -116,7 +116,7 @@ handle_request(#diameter_packet{msg = Req, errors = Err}, _SvcName, {_, Caps})
                     'Called-Station-Id' = APN
                     }
         = Req,
-    error_logger:error_msg(
+    lager:error(
         "
         ------------------------------> Req. Number ~p <------------------------------
         CCR: ~p
@@ -130,7 +130,7 @@ handle_request(#diameter_packet{msg = Req, errors = Err}, _SvcName, {_, Caps})
 %% Should really reply to other base messages that we don't support
 %% but simply discard them instead.
 handle_request(#diameter_packet{}, _SvcName, {_,_}) ->
-    error_logger:error_msg("Unsupported message.~n"),
+    lager:error("Unsupported message.~n"),
     discard.
 
 %% ------------------------------------------------------------------
@@ -164,18 +164,18 @@ process_mscc(ReqType, [MSCC|T], SessionData) ->
     case {RSU, USU} of
         {[_], []} ->
             % Have RSU. No USU (First interrogation)
-            error_logger:info_msg("Have RSU. No USU (First interrogation)~n"),
+            lager:info("Have RSU. No USU (First interrogation)"),
             {ResultCode, GrantedUnits} = ocsgateway:ocs_charge({initial, SessionData, {0, ServiceId, RatingGroup}});
         {[_], [_]} ->
             % Have RSU. Have USU (Next interrogation)
-            error_logger:info_msg("Have RSU. Have USU (Next interrogation)~n"),
+            lager:info("Have RSU. Have USU (Next interrogation)"),
             [#'Used-Service-Unit' {
              'CC-Total-Octets' = [UsedUnits]
             }] = USU,
             {ResultCode, GrantedUnits} = ocsgateway:ocs_charge({update, SessionData, {UsedUnits, ServiceId, RatingGroup}});
         {[], [_]} ->
             % No RSU. Have USU (Last interrogation)
-            error_logger:info_msg("No RSU. Have USU (Last interrogation)~n"),
+            lager:info("No RSU. Have USU (Last interrogation)"),
             [#'Used-Service-Unit' {
              'CC-Total-Octets' = [UsedUnits]
             }] = USU,

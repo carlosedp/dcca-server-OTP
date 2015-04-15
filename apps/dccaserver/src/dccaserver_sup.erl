@@ -37,7 +37,7 @@ start_link() ->
 %%%.
 %%%'   CALLBACKS
 init([]) ->
-        DiaServer = {dccaserver,{diameter_srv,start_link,[]},
+        DiaServer = {dccaserver,{dccaserver,start_link,[]},
                      permanent,
                      5000,
                      worker,

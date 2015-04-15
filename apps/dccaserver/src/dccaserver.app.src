@@ -39,4 +39,3 @@
   {mod, { dccaserver_app, []}},
   {env, []}
  ]}.
-% vim: set filetype=erlang tabstop=2:

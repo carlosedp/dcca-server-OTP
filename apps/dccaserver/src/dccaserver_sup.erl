@@ -43,6 +43,3 @@ init([]) ->
                      worker,
                      [server_cb]},
         {ok, { {one_for_one, 5, 10}, [DiaServer]} }.
-
-%%%.
-% vim: set filetype=erlang tabstop=2 foldmarker=%%%',%%%. foldmethod=marker:

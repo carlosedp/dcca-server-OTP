@@ -35,6 +35,3 @@ stop(_State) ->
   ok.
 %%%.
 %%%'   PRIVATE FUNCTIONS
-
-%%%.
-% vim: set filetype=erlang tabstop=2 foldmarker=%%%',%%%. foldmethod=marker:

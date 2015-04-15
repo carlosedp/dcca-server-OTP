@@ -159,8 +159,3 @@ listen(Address) ->
 %% Convert connection type
 tmod(tcp)  -> diameter_tcp;
 tmod(sctp) -> diameter_sctp.
-
-
-%%%.
-%%% vim: set filetype=erlang tabstop=2 foldmarker=%%%',%%%. foldmethod=marker:
-

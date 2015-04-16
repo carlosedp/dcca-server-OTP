@@ -45,11 +45,11 @@
 -define(UNEXPECTED, erlang:error({unexpected, ?MODULE, ?LINE})).
 
 peer_up(_SvcName, {PeerRef, Caps}, State) ->
-    lager:info("Peer up: ~p - ~p~n", [PeerRef, Caps]),
+    lager:info("Peer up: ~p - ~p~n", [PeerRef, lager:pr(Caps, ?MODULE)]),
     State.
 
 peer_down(_SvcName, {PeerRef, Caps}, State) ->
-    lager:info("Peer down: ~p - ~p~n", [PeerRef, Caps]),
+    lager:info("Peer down: ~p - ~p~n", [PeerRef, lager:pr(Caps, ?MODULE)]),
     State.
 
 pick_peer(_, _, _SvcName, _State) ->
@@ -88,15 +88,7 @@ handle_request(#diameter_packet{msg = Req, errors = []}, _SvcName, {_, Caps})
     } = Req,
     MSISDN = getSubscriptionId(?'MSISDN', Subscription),
     IMSI = getSubscriptionId(?'IMSI', Subscription),
-    %lager:debug("Record:~n~p~n", [lists:zip(record_info(fields, 'CCR'), tl(tuple_to_list(Req)))]),
-
-    lager:info(
-        "
-        ------------------------------> Req. Number ~p <------------------------------
-        CCR OK: ~p
-        MSCC: ~p
-        ------------------------------------------------------------------------------
-        ", [ReqNum, lager:pr(Req, ?MODULE), MSCC]),
+    lager:info("{RequestType, ~p}:{RequestNumber, ~p}:{CCR, ~p}:{MSCC, ~p}", [ReqType, ReqNum, lager:pr(Req, ?MODULE), lager:pr(MSCC, ?MODULE)]),
     MSCC_Data = process_mscc(ReqType, MSCC, {APN, IMSI, MSISDN, "10.0.0.1", SessionId, EventTimestamp}),
     {reply, answer(ok, ReqType, ReqNum, SessionId, OH, OR, MSCC_Data)};
 
@@ -112,19 +104,11 @@ handle_request(#diameter_packet{msg = Req, errors = Err}, _SvcName, {_, Caps})
     #'CCR'{'Session-Id' = SessionId,
                     'CC-Request-Type' = ReqType,
                     'CC-Request-Number'= ReqNum,
-                    'Multiple-Services-Credit-Control' = MSCC,
-                    'Called-Station-Id' = APN
+                    'Multiple-Services-Credit-Control' = MSCC
                     }
         = Req,
-    lager:error(
-        "
-        ------------------------------> Req. Number ~p <------------------------------
-        CCR: ~p
-        Error: ~p
-        APN: ~p
-        MSCC: ~p
-        ------------------------------------------------------------------------------
-        ", [ReqNum, Req, Err, APN, MSCC]),
+    lager:info("{RequestType, ~p}:{RequestNumber, ~p}:{Error, ~p}:{CCR, ~p}:{MSCC, ~p}", [ReqType, ReqNum, Err, lager:pr(Req, ?MODULE), lager:pr(MSCC, ?MODULE)]),
+
     {reply, answer(err, ReqType, ReqNum, SessionId, OH, OR, [])};
 
 %% Should really reply to other base messages that we don't support

@@ -88,7 +88,7 @@ handle_request(#diameter_packet{msg = Req, errors = []}, _SvcName, {_, Caps})
     } = Req,
     MSISDN = getSubscriptionId(?'MSISDN', Subscription),
     IMSI = getSubscriptionId(?'IMSI', Subscription),
-    %io:format("Record:~n~p~n", [lists:zip(record_info(fields, 'CCR'), tl(tuple_to_list(Req)))]),
+    %lager:debug("Record:~n~p~n", [lists:zip(record_info(fields, 'CCR'), tl(tuple_to_list(Req)))]),
 
     lager:info(
         "
@@ -151,16 +151,16 @@ getSubscriptionId(_, []) ->
 %% Process MSCC
 process_mscc(ReqType, [MSCC|T], SessionData) ->
     common_stats:inc(?DIA_STATS_TAB, dia_input_update_OK),
-    % io:format("Process_MSCC ~p~n", [MSCC]),
-    % io:format("Process_MSCC T ~p~n", [T]),
+    % lager:debug("Process_MSCC ~p~n", [MSCC]),
+    % lager:debug("Process_MSCC T ~p~n", [T]),
     #'Multiple-Services-Credit-Control' {
         'Used-Service-Unit' = USU,
         'Requested-Service-Unit' = RSU,
         'Service-Identifier' = [ServiceId],
         'Rating-Group' = [RatingGroup]
     } = MSCC,
-    % io:format("USU: ~w~n",[USU]),
-    % io:format("RSU: ~w~n",[RSU]),
+    % lager:debug("USU: ~w~n",[USU]),
+    % lager:debug("RSU: ~w~n",[RSU]),
     case {RSU, USU} of
         {[_], []} ->
             % Have RSU. No USU (First interrogation)
@@ -225,9 +225,9 @@ answer(err, ReqType, ReqNum, SessionId, OH, OR, []) ->
     CCA.
 
 mscc_answer([MSCC|T]) ->
-    % io:format("mscc_answer:~n"),
-    % io:format("MSCC: ~p~n",[MSCC]),
-    % io:format("T: ~w~n",[T]),
+    % lager:debug("mscc_answer:~n"),
+    % lager:debug("MSCC: ~p~n",[MSCC]),
+    % lager:debug("T: ~w~n",[T]),
     {ServiceId, RatingGroup, GrantedUnits, _ResultCode} = MSCC,
     [#'Multiple-Services-Credit-Control' {
       'Granted-Service-Unit' = [#'Granted-Service-Unit' {

@@ -12,7 +12,7 @@ NODE				= {{name}}
 REL					= {{name}}
 SCRIPT_PATH  := $(REL_DIR)/$(NODE)/bin/$(REL)
 
-.PHONY: rel deps
+.PHONY: all compile test clean get-deps build-plt dialyze rel
 
 all: deps compile
 
@@ -72,4 +72,4 @@ checkplt: buildplt
 	@$(REBAR) skip_deps=true check-plt
 
 shell:
-	$(ERL) -pa deps/*/ebin apps/*/ebin -boot start_sasl -s lager -s diameter -s ocsgateway -s dccaserver
+	$(ERL) -pa deps/*/ebin apps/*/ebin -sname dccaserver -setcookie abc123 -boot start_sasl -s lager -s diameter -s ocsgateway -s dccaserver

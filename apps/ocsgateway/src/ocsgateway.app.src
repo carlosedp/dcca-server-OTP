@@ -29,7 +29,8 @@
   {registered, []},
   {applications, [
                   kernel,
-                  stdlib
+                  stdlib,
+                  lager
                  ]},
   {mod, { ocsgateway_app, []}},
   {env, []}

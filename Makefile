@@ -1,18 +1,23 @@
+APP					= dccaserver
+ERLAPPS				= -s ocsgateway -s dccaserver
+ERLDEPS				= -s lager -s diameter
+COOKIE				= 'abc123'
+
 ifeq ($(OS),Windows_NT)
-        ERL ?= run werl
+		ERL ?= run werl
 else
-        ERL ?= erl
+		ERL ?= erl
 endif
 ERLC				= erlc
 REBAR 				= escript rebar
-EBIN_DIRS		:= $(wildcard deps/*/ebin)
-APPS				:= $(shell dir apps)
-REL_DIR     = rel
-NODE				= {{name}}
-REL					= {{name}}
+EBIN_DIRS			:= $(wildcard deps/*/ebin)
+APPS				:= $(shell ls apps)
+REL_DIR				= rel
+NODE				= $(APP)
+REL					= $(APP)
 SCRIPT_PATH  := $(REL_DIR)/$(NODE)/bin/$(REL)
 
-.PHONY: all compile test clean get-deps build-plt dialyze rel
+.PHONY: all compile deps clean distclean test rel build-plt dialyze
 
 all: deps compile
 
@@ -72,4 +77,4 @@ checkplt: buildplt
 	@$(REBAR) skip_deps=true check-plt
 
 shell:
-	$(ERL) -pa deps/*/ebin apps/*/ebin -sname dccaserver -setcookie abc123 -boot start_sasl -s lager -s diameter -s ocsgateway -s dccaserver
+	$(ERL) -pa deps/*/ebin apps/*/ebin -sname $(APP) -setcookie $(COOKIE) -boot start_sasl $(ERLDEPS) $(ERLAPPS)

@@ -2,12 +2,6 @@ APP					= dccaserver
 ERLAPPS				= -s ocsgateway -s dccaserver
 ERLDEPS				= -s lager -s diameter
 COOKIE				= 'abc123'
-
-ifeq ($(OS),Windows_NT)
-		ERL ?= run werl
-else
-		ERL ?= erl
-endif
 ERLC				= erlc
 REBAR 				= escript rebar
 EBIN_DIRS			:= $(wildcard deps/*/ebin)
@@ -15,7 +9,14 @@ APPS				:= $(shell ls apps)
 REL_DIR				= rel
 NODE				= $(APP)
 REL					= $(APP)
-SCRIPT_PATH  := $(REL_DIR)/$(NODE)/bin/$(REL)
+
+ifeq ($(OS),Windows_NT)
+		ERL ?= run werl
+		SCRIPT_PATH  := $(REL_DIR)/$(NODE)/bin/$(REL).cmd
+else
+		ERL ?= erl
+		SCRIPT_PATH  := $(REL_DIR)/$(NODE)/bin/$(REL)
+endif
 
 .PHONY: all compile deps clean distclean test rel build-plt dialyze
 

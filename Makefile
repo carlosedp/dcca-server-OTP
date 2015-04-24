@@ -18,12 +18,16 @@ else
 		SCRIPT_PATH  := $(REL_DIR)/$(NODE)/bin/$(REL)
 endif
 
-.PHONY: all compile deps clean distclean test rel build-plt dialyze
+.PHONY: all compile deps clean distclean test rel
+#.PHONY: rel deps test
 
 all: deps compile
 
 compile: deps
 	@$(REBAR) compile
+
+app:
+	@$(REBAR) compile skip_deps=true
 
 deps:
 	@$(REBAR) get-deps
@@ -35,7 +39,16 @@ clean:
 distclean: clean
 	@$(REBAR) delete-deps
 
-test:
+cleanall: distclean
+	@echo
+	@echo "Are you sure? This will clean all untracked and ignored files."
+	@echo "In 5 seconds the following files/dirs will be removed:"
+	@git clean -n -d -x
+	@echo "..."
+	@sleep 5
+	@git clean -x -d -f
+
+test: all
 	@$(REBAR) skip_deps=true ct
 
 rel: deps
@@ -68,14 +81,8 @@ doc:
 		cp -R apps/$${app}/doc doc/$${app}; \
 	done;
 
-analyze: checkplt
-	@$(REBAR) skip_deps=true dialyze
-
-buildplt:
-	@$(REBAR) skip_deps=true build-plt
-
-checkplt: buildplt
-	@$(REBAR) skip_deps=true check-plt
+xref: compile
+	${REBAR} xref skip_deps=true
 
 shell:
 	$(ERL) -pa deps/*/ebin apps/*/ebin -sname $(APP) -setcookie $(COOKIE) -boot start_sasl $(ERLDEPS) $(ERLAPPS)

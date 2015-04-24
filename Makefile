@@ -19,7 +19,6 @@ else
 endif
 
 .PHONY: all compile deps clean distclean test rel
-#.PHONY: rel deps test
 
 all: deps compile
 
@@ -43,6 +42,7 @@ cleanall: distclean
 	@echo
 	@echo "Are you sure? This will clean all untracked and ignored files."
 	@echo "In 5 seconds the following files/dirs will be removed:"
+	@echo
 	@git clean -n -d -x
 	@echo "..."
 	@sleep 5

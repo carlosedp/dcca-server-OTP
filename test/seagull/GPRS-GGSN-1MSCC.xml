@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Configuration File for VAS Scenario  -->
+<scenario>
+    <counter>
+        <counterdef init="1000" name="HbH-counter"></counterdef>
+        <counterdef init="2000" name="EtE-counter"></counterdef>
+        <counterdef init="2000013" name="session-counter"></counterdef>
+    </counter>
+    <init>
+        <send channel="channel-1">
+            <command name="CER">
+                <avp name="Origin-Host" value="localhost.example.com"></avp>
+                <avp name="Origin-Realm" value="example.com"></avp>
+                <avp name="Host-IP-Address" value="0x00017f000001"></avp>
+                <avp name="Vendor-Id" value="5271"></avp>
+                <avp name="Product-Name" value="Gy"></avp>
+                <avp name="Origin-State-Id" value="1094807040"></avp>
+                <avp name="Supported-Vendor-Id" value="193"></avp>
+                <avp name="Supported-Vendor-Id" value="10415"></avp>
+                <avp name="Auth-Application-Id" value="4"></avp>
+                <avp name="Acct-Application-Id" value="0"></avp>
+                <avp name="Firmware-Revision" value="1"></avp>
+            </command>
+        </send>
+        <receive channel="channel-1">
+            <command name="CEA">
+                <avp name="Result-Code" value="2001"></avp>
+            </command>
+        </receive>
+    </init>
+    <!-- Traffic -->
+    <traffic>
+        <!-- ################## SEND  RESERVATION ######################## -->
+        <send channel="channel-1">
+            <action>
+                <!-- For each new call, increment the session-ID counter -->
+                <inc-counter name="HbH-counter"></inc-counter>
+                <inc-counter name="EtE-counter"></inc-counter>
+                <inc-counter name="session-counter"></inc-counter>
+                <set-value format="$(HbH-counter)" name="HbH-id"></set-value>
+                <set-value format="$(EtE-counter)" name="EtE-id"></set-value>
+                <set-value format="195-246-102-2-kiggsn3;10962983401;$(session-counter)" name="Session-Id"></set-value>
+                <!--    <log format="_Initial_ .;1096298391;$(session-counter)"></log>-->
+                <set-value format="startoffset=2208988800UL" method="systime" name="Event-Timestamp"></set-value>
+            </action>
+            <command name="CCR">
+                <avp name="Session-Id" value="value_is_replaced"></avp>
+                <avp name="Origin-Host" value="localhost.example.com"></avp>
+                <avp name="Origin-Realm" value="example.com"></avp>
+                <avp name="Destination-Realm" value="realm.example.com"></avp>
+                <avp name="Auth-Application-Id" value="4"></avp>
+                <avp name="CC-Request-Type" value="1"></avp>
+                <avp name="CC-Request-Number" value="0"></avp>
+                <avp name="Event-Timestamp" value="0"></avp>
+                <!-- will be replaced -->
+                <avp name="Origin-State-Id" value="2"></avp>
+                <avp name="Service-Context-Id" value="gprs@diameter.com"></avp>
+                <avp name="Subscription-Id">
+                    <avp name="Subscription-Id-Type" value="0"></avp>
+                    <avp name="Subscription-Id-Value" value="5521981989756"></avp>
+                </avp>
+                <avp name="Subscription-Id">
+                    <avp name="Subscription-Id-Type" value="1"></avp>
+                    <avp name="Subscription-Id-Value" value="724044009872521"></avp>
+                </avp>
+                <avp name="Multiple-Services-Indicator" value="1"></avp>
+                <avp name="Multiple-Services-Credit-Control">
+                    <avp name="Requested-Service-Unit" value=""></avp>
+                    <avp name="Service-Identifier" value="1"></avp>
+                    <avp name="Rating-Group" value="100"></avp>
+                </avp>
+                <avp name="Called-Station-Id" value="apn.com"></avp>
+                <avp name="SIG">
+                    <avp name="PSIG">
+                        <avp name="Called-Station-Id" value="apn.com"></avp>
+                        <avp name="3GPP-Charging-Id" value="0xd6d0e2ee"></avp>
+                        <avp name="3GPP-PDP-Type" value="0"></avp>
+                        <avp name="GPPGPRSNegQoSProfile" value="99-23821f9396878774817878"></avp>
+                        <avp name="SGSNAddress" value="0x0001bd28f005"></avp>
+                        <avp name="GGSNAddress" value="0x0001bd28f1fc"></avp>
+                        <avp name="3GPP-GGSN-MCC-MNC" value="72402"></avp>
+                        <avp name="3GPP-NSAPI" value="a"></avp>
+                        <avp name="3GPP-Selection-Mode" value="1"></avp>
+                        <avp name="3GPP-Charging-Characteristics" value="30343030"></avp>
+                        <avp name="3GPP-MS-TimeZone" value="2900"></avp>
+                        <avp name="3GPP-User-Location-Info" value="0x0127f420c4d713b7"></avp>
+                        <avp name="3GPP-RAT-Type" value="0x01"></avp>
+                    </avp>
+                </avp>
+                <!-- Added -->
+            </command>
+            <action>
+                <start-timer></start-timer>
+            </action>
+        </send>
+        <receive channel="channel-1">
+            <command name="CCA">
+                <avp name="Result-Code" value="2001"></avp>
+            </command>
+            <action>
+                <!-- check value of result code -->
+                <stop-timer></stop-timer>
+                <check-value behaviour="error" name="Result-Code"></check-value>
+                <store entity="Session-Id" name="sid"></store>
+            </action>
+        </receive>
+        <wait-ms value="5000"></wait-ms>
+        <!-- ################## SEND 9 extend RESERVATION ######################## -->
+        <send channel="channel-1">
+            <action>
+                <!-- For each new call, increment the counters -->
+                <inc-counter name="HbH-counter"></inc-counter>
+                <inc-counter name="EtE-counter"></inc-counter>
+                <restore entity="Session-Id" name="sid"></restore>
+                <set-value format="$(HbH-counter)" name="HbH-id"></set-value>
+                <set-value format="$(EtE-counter)" name="EtE-id"></set-value>
+                <set-value format="startoffset=2208988800UL" method="systime" name="Event-Timestamp"></set-value>
+                <!--    <log format="_Final_   $(sid)"></log>-->
+            </action>
+            <command name="CCR">
+                <avp name="Session-Id" value="value_is_replaced"></avp>
+                <avp name="Origin-Host" value="localhost.example.com"></avp>
+                <avp name="Origin-Realm" value="example.com"></avp>
+                <avp name="Destination-Realm" value="realm.example.com"></avp>
+                <avp name="Auth-Application-Id" value="4"></avp>
+                <avp name="CC-Request-Type" value="2"></avp>
+                <avp name="CC-Request-Number" value="1"></avp>
+                <avp name="Event-Timestamp" value="0"></avp>
+                <!-- will be replaced -->
+                <avp name="Origin-State-Id" value="2"></avp>
+                <avp name="Service-Context-Id" value="gprs@diameter.com"></avp>
+                <avp name="Subscription-Id">
+                    <avp name="Subscription-Id-Type" value="0"></avp>
+                    <avp name="Subscription-Id-Value" value="5521981989756"></avp>
+                </avp>
+                <avp name="Subscription-Id">
+                    <avp name="Subscription-Id-Type" value="1"></avp>
+                    <avp name="Subscription-Id-Value" value="724044009872521"></avp>
+                </avp>
+                <avp name="Multiple-Services-Credit-Control">
+                    <avp name="Requested-Service-Unit" value=""></avp>
+                    <avp name="Reporting-Reason" value="3"></avp>
+                    <avp name="Used-Service-Unit" value="">
+                        <avp name="CC-Total-Octets" value="1423360"></avp>
+                    </avp>
+                    <avp name="Service-Identifier" value="1"></avp>
+                    <avp name="Rating-Group" value="100"></avp>
+                </avp>
+                <avp name="Called-Station-Id" value="apn.com"></avp>
+                <avp name="SIG">
+                    <avp name="PSIG">
+                        <avp name="3GPP-Charging-Id" value="0xd6d0e2ee"></avp>
+                        <avp name="3GPP-PDP-Type" value="0"></avp>
+                        <avp name="GPPGPRSNegQoSProfile" value="99-23821f9396878774817878"></avp>
+                        <avp name="SGSNAddress" value="0x0001bd28f005"></avp>
+                        <avp name="GGSNAddress" value="0x0001bd28f1fc"></avp>
+                        <avp name="3GPP-GGSN-MCC-MNC" value="72402"></avp>
+                        <avp name="3GPP-NSAPI" value="a"></avp>
+                        <avp name="Called-Station-Id" value="apn.com"></avp>
+                        <avp name="3GPP-Selection-Mode" value="1"></avp>
+                        <avp name="3GPP-Charging-Characteristics" value="30343030"></avp>
+                        <avp name="3GPP-MS-TimeZone" value="2900"></avp>
+                        <avp name="3GPP-User-Location-Info" value="0x0127f420c4d713b7"></avp>
+                        <avp name="3GPP-RAT-Type" value="0x01"></avp>
+                    </avp>
+                </avp>
+                <!-- Added -->
+            </command>
+            <action>
+                <start-timer></start-timer>
+            </action>
+        </send>
+        <receive channel="channel-1">
+            <action>
+                <stop-timer></stop-timer>
+            </action>
+            <command name="CCA">
+                <avp name="Result-Code" value="2001"></avp>
+            </command>
+            <action>
+                <check-value behaviour="error" name="Result-Code"></check-value>
+            </action>
+        </receive>
+        <wait-ms value="5000"></wait-ms>
+        <!-- ################## SEND 9 extend RESERVATION ######################## -->
+        <send channel="channel-1">
+            <action>
+                <!-- For each new call, increment the counters -->
+                <inc-counter name="HbH-counter"></inc-counter>
+                <inc-counter name="EtE-counter"></inc-counter>
+                <restore entity="Session-Id" name="sid"></restore>
+                <set-value format="$(HbH-counter)" name="HbH-id"></set-value>
+                <set-value format="$(EtE-counter)" name="EtE-id"></set-value>
+                <set-value format="startoffset=2208988800UL" method="systime" name="Event-Timestamp"></set-value>
+                <!--    <log format="_Final_   $(sid)"></log>-->
+            </action>
+            <command name="CCR">
+                <avp name="Session-Id" value="value_is_replaced"></avp>
+                <avp name="Origin-Host" value="localhost.example.com"></avp>
+                <avp name="Origin-Realm" value="example.com"></avp>
+                <avp name="Destination-Realm" value="realm.example.com"></avp>
+                <avp name="Auth-Application-Id" value="4"></avp>
+                <avp name="CC-Request-Type" value="2"></avp>
+                <avp name="CC-Request-Number" value="2"></avp>
+                <avp name="Event-Timestamp" value="0"></avp>
+                <!-- will be replaced -->
+                <avp name="Origin-State-Id" value="2"></avp>
+                <avp name="Service-Context-Id" value="gprs@diameter.com"></avp>
+                <avp name="Subscription-Id">
+                    <avp name="Subscription-Id-Type" value="0"></avp>
+                    <avp name="Subscription-Id-Value" value="5521981989756"></avp>
+                </avp>
+                <avp name="Subscription-Id">
+                    <avp name="Subscription-Id-Type" value="1"></avp>
+                    <avp name="Subscription-Id-Value" value="724044009872521"></avp>
+                </avp>
+                <avp name="Multiple-Services-Credit-Control">
+                    <avp name="Used-Service-Unit">
+                        <avp name="CC-Total-Octets" value="49999"></avp>
+                        <avp name="Reporting-Reason" value="3"></avp>
+                    </avp>
+                    <avp name="Requested-Service-Unit" value=""></avp>
+                    <avp name="Service-Identifier" value="1"></avp>
+                    <avp name="Rating-Group" value="100"></avp>
+                </avp>
+                <avp name="Called-Station-Id" value="apn.com"></avp>
+                <avp name="SIG">
+                    <avp name="PSIG">
+                        <avp name="3GPP-Charging-Id" value="0xd6d0e2ee"></avp>
+                        <avp name="3GPP-PDP-Type" value="0"></avp>
+                        <avp name="GPPGPRSNegQoSProfile" value="99-23821f9396878774817878"></avp>
+                        <avp name="SGSNAddress" value="0x0001bd28f005"></avp>
+                        <avp name="GGSNAddress" value="0x0001bd28f1fc"></avp>
+                        <avp name="3GPP-GGSN-MCC-MNC" value="72402"></avp>
+                        <avp name="3GPP-NSAPI" value="a"></avp>
+                        <avp name="Called-Station-Id" value="apn.com"></avp>
+                        <avp name="3GPP-Selection-Mode" value="1"></avp>
+                        <avp name="3GPP-Charging-Characteristics" value="30343030"></avp>
+                        <avp name="3GPP-MS-TimeZone" value="2900"></avp>
+                        <avp name="3GPP-User-Location-Info" value="0x0127f420c4d713b7"></avp>
+                        <avp name="3GPP-RAT-Type" value="0x01"></avp>
+                    </avp>
+                </avp>
+                <!-- Added -->
+            </command>
+            <action>
+                <start-timer></start-timer>
+            </action>
+        </send>
+        <receive channel="channel-1">
+            <action>
+                <stop-timer></stop-timer>
+            </action>
+            <command name="CCA">
+                <avp name="Result-Code" value="2001"></avp>
+            </command>
+            <action>
+                <check-value behaviour="error" name="Result-Code"></check-value>
+            </action>
+        </receive>
+        <wait-ms value="5000"></wait-ms>
+        <!-- ################## SEND  final RESERVATION ######################## -->
+        <send channel="channel-1">
+            <action>
+                <!-- For each new call, increment the counters -->
+                <inc-counter name="HbH-counter"></inc-counter>
+                <inc-counter name="EtE-counter"></inc-counter>
+                <restore entity="Session-Id" name="sid"></restore>
+                <set-value format="$(HbH-counter)" name="HbH-id"></set-value>
+                <set-value format="$(EtE-counter)" name="EtE-id"></set-value>
+                <set-value format="startoffset=2208988800UL" method="systime" name="Event-Timestamp"></set-value>
+                <!--    <log format="_Final_   $(sid)"></log>-->
+            </action>
+            <command name="CCR">
+                <avp name="Session-Id" value="value_is_replaced"></avp>
+                <avp name="Origin-Host" value="localhost.example.com"></avp>
+                <avp name="Origin-Realm" value="example.com"></avp>
+                <avp name="Destination-Realm" value="realm.example.com"></avp>
+                <avp name="Auth-Application-Id" value="4"></avp>
+                <avp name="CC-Request-Type" value="3"></avp>
+                <avp name="CC-Request-Number" value="3"></avp>
+                <avp name="Event-Timestamp" value="0"></avp>
+                <!-- will be replaced -->
+                <avp name="Origin-State-Id" value="2"></avp>
+                <avp name="Service-Context-Id" value="gprs@diameter.com"></avp>
+                <avp name="Subscription-Id">
+                    <avp name="Subscription-Id-Type" value="1"></avp>
+                    <avp name="Subscription-Id-Value" value="724044009872521"></avp>
+                </avp>
+                <avp name="Subscription-Id">
+                    <avp name="Subscription-Id-Type" value="0"></avp>
+                    <avp name="Subscription-Id-Value" value="5521981989756"></avp>
+                </avp>
+                <avp name="Termination-Cause" value="1"></avp>
+                <avp name="Multiple-Services-Credit-Control">
+                    <avp name="Reporting-Reason" value="1"></avp>
+                    <avp name="Used-Service-Unit">
+                        <avp name="CC-Total-Octets" value="30001"></avp>
+                    </avp>
+                    <avp name="Service-Identifier" value="1"></avp>
+                    <avp name="Rating-Group" value="100"></avp>
+                </avp>
+                <avp name="Called-Station-Id" value="apn.com"></avp>
+                <avp name="SIG">
+                    <avp name="PSIG">
+                        <avp name="3GPP-Charging-Id" value="0xd6d0e2ee"></avp>
+                        <avp name="3GPP-PDP-Type" value="0"></avp>
+                        <avp name="GPPGPRSNegQoSProfile" value="99-23821f9396878774817878"></avp>
+                        <avp name="SGSNAddress" value="0x0001bd28f005"></avp>
+                        <avp name="GGSNAddress" value="0x0001bd28f1fc"></avp>
+                        <avp name="3GPP-GGSN-MCC-MNC" value="72402"></avp>
+                        <avp name="3GPP-NSAPI" value="a"></avp>
+                        <avp name="Called-Station-Id" value="apn.com"></avp>
+                        <avp name="3GPP-Selection-Mode" value="1"></avp>
+                        <avp name="3GPP-Charging-Characteristics" value="30343030"></avp>
+                        <avp name="3GPP-MS-TimeZone" value="2900"></avp>
+                        <avp name="3GPP-User-Location-Info" value="0x0127f420c4d713b7"></avp>
+                        <avp name="3GPP-RAT-Type" value="0x01"></avp>
+                    </avp>
+                </avp>
+                <!-- Added -->
+            </command>
+            <action>
+                <start-timer></start-timer>
+            </action>
+        </send>
+        <receive channel="channel-1">
+            <action>
+                <stop-timer></stop-timer>
+            </action>
+            <command name="CCA">
+                <avp name="Result-Code" value="2001"></avp>
+            </command>
+            <action>
+                <check-value behaviour="error" name="Result-Code"></check-value>
+            </action>
+        </receive>
+    </traffic>
+</scenario>

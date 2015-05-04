@@ -63,12 +63,12 @@
 -define(SERVICE(Name), [{'Origin-Host', ?ORIGIN_HOST},
                         {'Origin-Realm', ?ORIGIN_REALM},
                         {'Vendor-Id', ?VENDOR_ID},
-                        {'Product-Name', "Server"},
+                        {'Product-Name', "DCCA Server"},
                         {'Auth-Application-Id', [?DCCA_APPLICATION_ID]},
                         {application,
                             [{alias, ?APP_ALIAS},
-                            {dictionary, ?DIAMETER_DICT_CCRA},
-                            {module, ?CALLBACK_MOD}]
+                             {dictionary, ?DIAMETER_DICT_CCRA},
+                             {module, ?CALLBACK_MOD}]
                         }]).
 
 
@@ -82,14 +82,14 @@
       Pid :: pid(),
       Error :: {already_started, Pid} | term().
 start_link() ->
-  % TODO: decide whether to name gen_server callback implementation or not.
-  % gen_server:start_link(?MODULE, [], []). % for unnamed gen_server
-  gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+    % TODO: decide whether to name gen_server callback implementation or not.
+    % gen_server:start_link(?MODULE, [], []). % for unnamed gen_server
+    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
 
 %% @doc starts gen_server implementation process
 -spec start()
-   -> ok
+    -> ok
     | {error, term()}.
 
 start() ->
@@ -98,35 +98,37 @@ start() ->
 %% @doc stops gen_server implementation process
 -spec stop() -> ok.
 stop() ->
-  gen_server:cast(?SERVER, stop).
+    gen_server:cast(?SERVER, stop).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
 init(State) ->
-  SvcName = ?MODULE,
-  common_stats:init(?DIA_STATS_TAB, ?DIA_STATS_COUNTERS),
-  diameter:start_service(SvcName, ?SERVICE(SvcName)),
-  listen({address, ?DIAMETER_PROTO, ?DIAMETER_IP, ?DIAMETER_PORT}),
-  lager:info("Diameter DCCA Application Listening on port ~p~n", [?DIAMETER_PORT]),
-  {ok, State}.
+    lager:info("Starting diameter on IP: ~p", [?DIAMETER_IP]),
+    lager:info("Starting diameter on port: ~p", [?DIAMETER_PORT]),
+    SvcName = ?MODULE,
+    common_stats:init(?DIA_STATS_TAB, ?DIA_STATS_COUNTERS),
+    diameter:start_service(SvcName, ?SERVICE(SvcName)),
+    listen({address, ?DIAMETER_PROTO, ?DIAMETER_IP, ?DIAMETER_PORT}),
+    lager:info("Diameter DCCA Application Listening on port ~p~n", [?DIAMETER_PORT]),
+    {ok, State}.
 
 %% @callback gen_server
 handle_call(_Req, _From, State) ->
-  {reply, State}.
+    {reply, State}.
 %% @callback gen_server
 handle_cast(stop, State) ->
-  {stop, normal, State};
+    {stop, normal, State};
 handle_cast(_Req, State) ->
-  {noreply, State}.
+    {noreply, State}.
 
 %% @callback gen_server
 handle_info(_Info, State) ->
-  {noreply, State}.
+    {noreply, State}.
 
 %% @callback gen_server
 code_change(_OldVsn, State, _Extra) ->
-  {ok, State}.
+    {ok, State}.
 
 %% @callback gen_server
 terminate(normal, _State) ->
@@ -135,11 +137,11 @@ terminate(normal, _State) ->
     lager:info("Diameter DCCA Application stopped.~n"),
     ok;
 terminate(shutdown, _State) ->
-  ok;
+    ok;
 terminate({shutdown, _Reason}, _State) ->
-  ok;
+    ok;
 terminate(_Reason, _State) ->
-  ok.
+    ok.
 
 %% ------------------------------------------------------------------
 %% Internal Function Definitions
@@ -147,10 +149,9 @@ terminate(_Reason, _State) ->
 
 %% listen/2
 listen(Name, {address, Protocol, IPAddr, Port}) ->
-    {ok, IP} = inet_parse:address(IPAddr),
     TransportOpts =  [{transport_module, tmod(Protocol)},
                       {transport_config, [{reuseaddr, true},
-                      {ip, IP}, {port, Port}]}],
+                      {ip, IPAddr}, {port, Port}]}],
     diameter:add_transport(Name, {listen, TransportOpts}).
 
 listen(Address) ->

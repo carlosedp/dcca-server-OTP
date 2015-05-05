@@ -93,6 +93,7 @@ start_link() ->
     | {error, term()}.
 
 start() ->
+    application:ensure_all_started(?MODULE),
     start_link().
 
 %% @doc stops gen_server implementation process

@@ -1,6 +1,4 @@
 APP					= dccaserver
-ERLAPPS				= -s ocsgateway -s dccaserver
-ERLDEPS				= -s lager -s diameter
 COOKIE				= 'abc123'
 ERLC				= erlc
 REBAR 				= escript rebar
@@ -85,7 +83,7 @@ xref: compile
 	${REBAR} xref skip_deps=true
 
 shell:
-	$(ERL) -pa deps/*/ebin apps/*/ebin -sname $(APP) -setcookie $(COOKIE) -boot start_sasl $(ERLDEPS) $(ERLAPPS)
+	$(ERL) -pa deps/*/ebin apps/*/ebin -sname $(APP) -setcookie $(COOKIE) -boot start_sasl -s $(APP)
 
 ##
 ## Dialyzer

@@ -105,13 +105,12 @@ stop() ->
 %% gen_server Function Definitions
 %% ------------------------------------------------------------------
 init(State) ->
-    lager:info("Starting diameter on IP: ~p", [?DIAMETER_IP]),
-    lager:info("Starting diameter on port: ~p", [?DIAMETER_PORT]),
     SvcName = ?MODULE,
     common_stats:init(?DIA_STATS_TAB, ?DIA_STATS_COUNTERS),
     diameter:start_service(SvcName, ?SERVICE(SvcName)),
-    listen({address, ?DIAMETER_PROTO, ?DIAMETER_IP, ?DIAMETER_PORT}),
-    lager:info("Diameter DCCA Application Listening on port ~p~n", [?DIAMETER_PORT]),
+    listen({address, ?DIAMETER_PROTO, element(2,inet:parse_address(?DIAMETER_IP)), ?DIAMETER_PORT}),
+    lager:info("Diameter DCCA Application started on ~p IP ~s, port ~p~n",
+        [?DIAMETER_PROTO, ?DIAMETER_IP, ?DIAMETER_PORT]),
     {ok, State}.
 
 %% @callback gen_server

@@ -23,7 +23,7 @@
 %% -------------------------------------------------------------------
 
 -define(DCCA_APPLICATION_ID, 4).
--define(DIAMETER_IP, element(2,inet_parse:address(application:get_env(dccaserver, diameter_ip, "127.0.0.1")))).
+-define(DIAMETER_IP, application:get_env(dccaserver, diameter_ip, "127.0.0.1")).
 -define(DIAMETER_PORT, application:get_env(dccaserver, diameter_port, 3868)).
 -define(DIAMETER_PROTO, application:get_env(dccaserver, diameter_proto, tcp)).
 

@@ -82,8 +82,8 @@ xref: compile
 	${REBAR} xref skip_deps=true
 
 shell:
-	$(REBAR) shell
-	# $(ERL) -pa deps/*/ebin apps/*/ebin -sname $(APP) -setcookie $(COOKIE) -boot start_sasl -s $(APP)
+	# $(REBAR) shell
+	$(ERL) -pa  _build/default/lib/*/ebin -sname $(APP) -setcookie $(COOKIE) -boot start_sasl -s $(APP)
 
 ##
 ## Dialyzer

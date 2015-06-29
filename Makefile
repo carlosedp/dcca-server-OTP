@@ -37,6 +37,7 @@ cleanall: distclean
 	@echo "Are you sure? This will clean all untracked and ignored files."
 	@echo "In 5 seconds the following files/dirs will be removed:"
 	@echo
+	@rm -rf _build
 	@git clean -n -d -x
 	@echo "..."
 	@sleep 5

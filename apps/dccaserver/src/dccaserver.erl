@@ -60,9 +60,9 @@
 %% The service configuration. In a server supporting multiple Diameter
 %% applications each application may have its own, although they could all
 %% be configured with a common callback module.
--define(SERVICE(Name), [{'Origin-Host', ?ORIGIN_HOST},
-                        {'Origin-Realm', ?ORIGIN_REALM},
-                        {'Vendor-Id', ?VENDOR_ID},
+-define(SERVICE(Name), [{'Origin-Host', application:get_env(dccaserver, origin_host, "example.com")},
+                        {'Origin-Realm', application:get_env(dccaserver, origin_realm, "realm.example.com")},
+                        {'Vendor-Id', application:get_env(dccaserver, vendor_id, 0)},
                         {'Product-Name', "DCCA Server"},
                         {'Auth-Application-Id', [?DCCA_APPLICATION_ID]},
                         {application,
@@ -108,9 +108,12 @@ init(State) ->
     SvcName = ?MODULE,
     common_stats:init(?DIA_STATS_TAB, ?DIA_STATS_COUNTERS),
     diameter:start_service(SvcName, ?SERVICE(SvcName)),
-    listen({address, ?DIAMETER_PROTO, element(2,inet:parse_address(?DIAMETER_IP)), ?DIAMETER_PORT}),
+    Ip = application:get_env(dccaserver, diameter_ip, "127.0.0.1"),
+    Port = application:get_env(dccaserver, diameter_port, 3868),
+    Proto = application:get_env(dccaserver, diameter_proto, tcp),
+    listen({address, Proto, element(2,inet:parse_address(Ip)), Port}),
     lager:info("Diameter DCCA Application started on ~p IP ~s, port ~p~n",
-        [?DIAMETER_PROTO, ?DIAMETER_IP, ?DIAMETER_PORT]),
+        [Proto, Ip, Port]),
     {ok, State}.
 
 %% @callback gen_server

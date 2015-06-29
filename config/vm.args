@@ -1,0 +1,6 @@
+-name dccaserver-OTP
+
+-setcookie dccaserver-OTP_cookie
+
++K true
++A30

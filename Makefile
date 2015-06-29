@@ -1,7 +1,7 @@
 APP					= dccaserver
 COOKIE				= 'abc123'
 ERLC				= erlc
-REBAR 				= escript rebar
+REBAR 				= escript rebar3
 EBIN_DIRS			:= $(wildcard deps/*/ebin)
 APPS				:= $(shell ls apps)
 REL_DIR				= rel
@@ -20,21 +20,17 @@ endif
 
 all: deps compile
 
-compile: deps
+compile:
 	@$(REBAR) compile
 
-app:
-	@$(REBAR) compile skip_deps=true
-
 deps:
-	@$(REBAR) get-deps
-	@$(REBAR) check-deps
+	@$(REBAR) upgrade
 
 clean:
 	@$(REBAR) clean
 
-distclean: clean
-	@$(REBAR) delete-deps
+distclean:
+	@$(REBAR) clean -a
 
 cleanall: distclean
 	@echo
@@ -50,7 +46,10 @@ test: all
 	@$(REBAR) skip_deps=true ct
 
 rel: deps
-	@$(REBAR) compile generate
+	@$(REBAR) release
+
+tar: compile
+	$(REBAR) as prod tar
 
 start: $(SCRIPT_PATH)
 	@./$(SCRIPT_PATH) start
@@ -83,7 +82,8 @@ xref: compile
 	${REBAR} xref skip_deps=true
 
 shell:
-	$(ERL) -pa deps/*/ebin apps/*/ebin -sname $(APP) -setcookie $(COOKIE) -boot start_sasl -s $(APP)
+	$(REBAR) shell
+	# $(ERL) -pa deps/*/ebin apps/*/ebin -sname $(APP) -setcookie $(COOKIE) -boot start_sasl -s $(APP)
 
 ##
 ## Dialyzer

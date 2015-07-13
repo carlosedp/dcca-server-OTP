@@ -118,7 +118,7 @@ init(State) ->
 
 %% @callback gen_server
 handle_call(_Req, _From, State) ->
-    {reply, State}.
+    {noreply, State}.
 %% @callback gen_server
 handle_cast(stop, State) ->
     {stop, normal, State};

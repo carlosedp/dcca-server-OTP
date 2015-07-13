@@ -120,9 +120,7 @@ get_stats(Ets, GlobalCounter) when is_atom(GlobalCounter) ->
 get_stats(Ets, Handle) ->
     try ets:match(Ets, {{Handle, '$1'}, '$2'}) of
         CounterVals when is_list(CounterVals) ->
-            {ok, [{Counter, Val}||[Counter, Val]<-CounterVals]};
-        Other ->
-            {error, {unexpected_result, Other}}
+            {ok, [{Counter, Val}||[Counter, Val]<-CounterVals]}
     catch
         X:Y ->
             {error, {X, Y}}
@@ -179,9 +177,7 @@ reset_stats(Ets, Handle) ->
         CounterVals when is_list(CounterVals) ->
             CVs = [{Counter, Val}||[Counter, Val] <- CounterVals],
             reset_stats(Ets, Handle, CVs),
-            {ok, CVs};
-        Other ->
-            {error, {unexpected_result, Other}}
+            {ok, CVs}
     catch
         X:Y ->
             {error, {X, Y}}

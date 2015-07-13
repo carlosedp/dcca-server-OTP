@@ -11,7 +11,7 @@ else
 		SCRIPT_PATH  := $(REL_DIR)/$(APP)/bin/$(APP)
 endif
 
-.PHONY: all compile clean distclean cleanall test rel prod
+.PHONY: all compile clean distclean cleanall test rel prod doc
 
 all: compile
 
@@ -50,8 +50,11 @@ doc:
 		cp -R apps/$${app}/doc doc/$${app}; \
 	done;
 
-xref: compile
-	${REBAR} xref skip_deps=true
+xref:
+	${REBAR} xref
+
+dialyzer:
+	${REBAR} dialyzer
 
 shell:
 	# $(REBAR) shell
@@ -80,38 +83,3 @@ restart: $(SCRIPT_PATH)
 
 reboot: $(SCRIPT_PATH)
 	@./$(SCRIPT_PATH) reboot
-
-##
-## Dialyzer
-##
-APPS = kernel stdlib sasl erts ssl tools inets compiler diameter
-ifeq ($(OS),Windows_NT)
-	COMBO_PLT = `cygpath -m $(HOME)/.aggregation_combo_dialyzer_plt`
-else
-	COMBO_PLT = $(HOME)/.aggregation_combo_dialyzer_plt
-endif
-
-check_plt: compile
-	dialyzer --check_plt --plt $(COMBO_PLT) --apps $(APPS) \
-		deps/*/ebin apps/*/ebin
-
-build_plt: compile
-	dialyzer --build_plt --output_plt $(COMBO_PLT) --apps $(APPS) \
-		deps/*/ebin apps/*/ebin
-
-dialyzer: compile
-	@echo
-	@echo Use "'make check_plt'" to check PLT prior to using this target.
-	@echo Use "'make build_plt'" to build PLT prior to using this target.
-	@echo
-	@sleep 1
-	dialyzer -Wno_return --plt $(COMBO_PLT) deps/*/ebin apps/*/ebin
-
-
-cleanplt:
-	@echo
-	@echo "Are you sure?  It takes about 1/2 hour to re-build."
-	@echo Deleting $(COMBO_PLT) in 5 seconds.
-	@echo
-	sleep 5
-	rm $(COMBO_PLT)

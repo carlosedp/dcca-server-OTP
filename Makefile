@@ -56,7 +56,7 @@ xref:
 dialyzer:
 	${REBAR} dialyzer
 
-shell:
+shell: compile
 	# $(REBAR) shell
 	$(ERL) -args_file config/vm.args -config config/sys.config -pa _build/default/lib/*/ebin --boot start_sasl -s dccaserver
 

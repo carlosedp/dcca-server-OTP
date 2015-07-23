@@ -42,6 +42,9 @@ rel:
 	@$(REBAR) release
 
 prod: compile
+	$(REBAR) as prod release
+
+tar:
 	$(REBAR) as prod tar
 
 doc:

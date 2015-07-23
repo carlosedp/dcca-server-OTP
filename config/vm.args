@@ -1,4 +1,4 @@
--name dccaserver-OTP
+-sname dccaserver-OTP
 
 -setcookie dccaserver-OTP_cookie
 

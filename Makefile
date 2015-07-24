@@ -78,7 +78,7 @@ ping: $(SCRIPT_PATH)
 attach: $(SCRIPT_PATH)
 	@./$(SCRIPT_PATH) attach
 
-console: $(SCRIPT_PATH)
+console: $(SCRIPT_PATH) compile
 	@./$(SCRIPT_PATH) console
 
 restart: $(SCRIPT_PATH)

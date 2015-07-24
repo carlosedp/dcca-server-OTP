@@ -1,8 +1,8 @@
 [{<<"goldrush">>,
   {git,"git://github.com/DeadZen/goldrush.git",
-       {ref,"71e63212f12c25827e0c1b4198d37d5d018a7fec"}},
+       {ref,"64864ba7fcf40988361340e48680b49a2c2938cf"}},
   1},
  {<<"lager">>,
   {git,"https://github.com/basho/lager.git",
-       {ref,"d33ccf3b69de09a628fe38b4d7981bb8671b8a4f"}},
+       {ref,"26540665e640872718d3dd9c35f2addf1279114b"}},
   0}].

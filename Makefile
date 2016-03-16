@@ -4,7 +4,7 @@ APPS				:= $(shell ls apps)
 REL_DIR				= _build/default/rel
 
 ifeq ($(OS),Windows_NT)
-		ERL ?= run werl
+		ERL ?= werl
 		SCRIPT_PATH  := $(REL_DIR)/$(APP)/bin/$(APP).cmd
 else
 		ERL ?= erl
@@ -60,7 +60,9 @@ dialyzer:
 	${REBAR} dialyzer
 
 shell: compile
-	# $(REBAR) shell
+	$(REBAR) shell
+
+wshell: compile
 	$(ERL) -args_file config/vm.args -config config/sys.config -pa _build/default/lib/*/ebin --boot start_sasl -s dccaserver
 
 ##

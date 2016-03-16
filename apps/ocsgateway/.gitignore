@@ -1,4 +1,0 @@
-ebin/*
-*.beam
-deps/*
-.rebar/erlcinfo

@@ -17,6 +17,7 @@ logs
 ebin
 log
 doc
+tmp
 erl_crash.dump
 apps/dccaserver/src/rfc4006_cc_Gy.erl
 apps/dccaserver/include/rfc4006_cc_Gy.hrl

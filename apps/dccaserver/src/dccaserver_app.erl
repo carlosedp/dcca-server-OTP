@@ -23,15 +23,19 @@
 %% -------------------------------------------------------------------
 
 -module(dccaserver_app).
+
 -behaviour(application).
 
 -export([start/2, stop/1]).
+
 %%%.
 %%%'   CALLBACKS
 start(_StartType, _StartArgs) ->
-  dccaserver_sup:start_link().
+    dccaserver_sup:start_link().
 
 stop(_State) ->
-  ok.
+    ok.
+
+
 %%%.
 %%%'   PRIVATE FUNCTIONS

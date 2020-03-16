@@ -23,6 +23,7 @@
 %% -------------------------------------------------------------------
 
 -module(dccaserver).
+
 -behaviour(gen_server).
 
 -include_lib("diameter/include/diameter.hrl").
@@ -34,8 +35,6 @@
 %% ------------------------------------------------------------------
 -export([start_link/0]).
 -export([start/0, stop/0, terminate/2]).
-
-
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
 %% ------------------------------------------------------------------
@@ -50,48 +49,38 @@
 %% Diameter stats
 -define(DIA_STATS_TAB, dcca_stats).
 -define(DIA_STATS_COUNTERS, [event_OK, event_ERR]).
-
 %% Server parameters
 -define(SVC_NAME, ?MODULE).
 -define(APP_ALIAS, ?MODULE).
 -define(CALLBACK_MOD, server_cb).
 -define(DIAMETER_DICT_CCRA, rfc4006_cc_Gy).
-
 %% The service configuration. In a server supporting multiple Diameter
 %% applications each application may have its own, although they could all
 %% be configured with a common callback module.
--define(SERVICE(Name), [{'Origin-Host', application:get_env(dccaserver, origin_host, "example.com")},
-                        {'Origin-Realm', application:get_env(dccaserver, origin_realm, "realm.example.com")},
-                        {'Vendor-Id', application:get_env(dccaserver, vendor_id, 0)},
-                        {'Product-Name', "DCCA Server"},
-                        {'Auth-Application-Id', [?DCCA_APPLICATION_ID]},
-                        {application,
-                            [{alias, ?APP_ALIAS},
-                             {dictionary, ?DIAMETER_DICT_CCRA},
-                             {module, ?CALLBACK_MOD}]
-                        }]).
-
+-define(SERVICE(Name),
+        [{'Origin-Host', application:get_env(dccaserver, origin_host, "example.com")},
+         {'Origin-Realm', application:get_env(dccaserver, origin_realm, "realm.example.com")},
+         {'Vendor-Id', application:get_env(dccaserver, vendor_id, 0)},
+         {'Product-Name', "DCCA Server"},
+         {'Auth-Application-Id', [?DCCA_APPLICATION_ID]},
+         {application,
+          [{alias, ?APP_ALIAS}, {dictionary, ?DIAMETER_DICT_CCRA}, {module, ?CALLBACK_MOD}]}]).
 
 %% ------------------------------------------------------------------
 %% API Function Definitions
 %% ------------------------------------------------------------------
 
 %% @doc starts gen_server implementation and caller links to the process too.
--spec start_link() -> {ok, Pid} | ignore | {error, Error}
-  when
-      Pid :: pid(),
-      Error :: {already_started, Pid} | term().
+-spec start_link() -> {ok, Pid} | ignore | {error, Error} when Pid :: pid(),
+                                                               Error :: {already_started, Pid} |
+                                                                        term().
 start_link() ->
     % TODO: decide whether to name gen_server callback implementation or not.
     % gen_server:start_link(?MODULE, [], []). % for unnamed gen_server
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
-
 %% @doc starts gen_server implementation process
--spec start()
-    -> ok
-    | {error, term()}.
-
+-spec start() -> ok | {error, term()}.
 start() ->
     application:ensure_all_started(?MODULE),
     start_link().
@@ -111,14 +100,14 @@ init(State) ->
     Ip = application:get_env(dccaserver, diameter_ip, "127.0.0.1"),
     Port = application:get_env(dccaserver, diameter_port, 3868),
     Proto = application:get_env(dccaserver, diameter_proto, tcp),
-    listen({address, Proto, element(2,inet:parse_address(Ip)), Port}),
-    lager:info("Diameter DCCA Application started on ~p IP ~s, port ~p~n",
-        [Proto, Ip, Port]),
+    listen({address, Proto, element(2, inet:parse_address(Ip)), Port}),
+    lager:info("Diameter DCCA Application started on ~p IP ~s, port ~p~n", [Proto, Ip, Port]),
     {ok, State}.
 
 %% @callback gen_server
 handle_call(_Req, _From, State) ->
     {noreply, State}.
+
 %% @callback gen_server
 handle_cast(stop, State) ->
     {stop, normal, State};
@@ -152,14 +141,16 @@ terminate(_Reason, _State) ->
 
 %% listen/2
 listen(Name, {address, Protocol, IPAddr, Port}) ->
-    TransportOpts =  [{transport_module, tmod(Protocol)},
-                      {transport_config, [{reuseaddr, true},
-                      {ip, IPAddr}, {port, Port}]}],
+    TransportOpts = [{transport_module, tmod(Protocol)},
+                     {transport_config, [{reuseaddr, true}, {ip, IPAddr}, {port, Port}]}],
     diameter:add_transport(Name, {listen, TransportOpts}).
 
 listen(Address) ->
     listen(?SVC_NAME, Address).
 
 %% Convert connection type
-tmod(tcp)  -> diameter_tcp;
-tmod(sctp) -> diameter_sctp.
+tmod(tcp) ->
+    diameter_tcp;
+tmod(sctp) ->
+    diameter_sctp.
+

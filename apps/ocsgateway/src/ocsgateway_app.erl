@@ -23,6 +23,7 @@
 %% -------------------------------------------------------------------
 
 -module(ocsgateway_app).
+
 -behaviour(application).
 
 %% Application callbacks
@@ -37,3 +38,4 @@ start(_StartType, _StartArgs) ->
 
 stop(_State) ->
     ok.
+

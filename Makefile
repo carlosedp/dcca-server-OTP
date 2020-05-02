@@ -1,7 +1,18 @@
 APP					= dccaserver
-REBAR 				= escript rebar3
+DOCKERREPO			= carlosedp
 APPS				:= $(shell ls apps)
 REL_DIR				= _build/default/rel
+
+REBAR3_URL=https://s3.amazonaws.com/rebar3/rebar3
+ifeq ($(wildcard rebar3),rebar3)
+REBAR3 = $(CURDIR)/rebar3
+endif
+
+REBAR3 ?= $(shell test -e `which rebar3` 2>/dev/null && which rebar3 || echo "./rebar3")
+
+ifeq ($(REBAR3),)
+REBAR3 = $(CURDIR)/rebar3
+endif
 
 ifeq ($(OS),Windows_NT)
 		ERL ?= werl
@@ -15,14 +26,15 @@ endif
 
 all: compile
 
-compile:
-	@$(REBAR) compile
+compile: $(REBAR3)
+	@echo "Building application"
+	@$(REBAR3) compile
 
 clean:
-	@$(REBAR) clean
+	@$(REBAR3) clean
 
 distclean:
-	@$(REBAR) clean -a
+	@$(REBAR3) clean -a
 
 cleanall: distclean
 	@echo
@@ -36,31 +48,35 @@ cleanall: distclean
 	@git clean -x -d -f
 
 test: all
-	@$(REBAR) ct
+	@$(REBAR3) ct
 
 rel:
-	@$(REBAR) release
+	@$(REBAR3) release
 
 prod: compile
-	$(REBAR) as prod release
+	$(REBAR3) as prod release
 
 tar:
-	$(REBAR) as prod tar
+	$(REBAR3) as prod tar
 
 doc:
-	$(REBAR) edoc
+	$(REBAR3) edoc
 	for app in $(APPS); do \
 		cp -R apps/$${app}/doc doc/$${app}; \
 	done;
 
 xref:
-	${REBAR} xref
+	$(REBAR3) xref
 
 dialyzer:
-	${REBAR} dialyzer
+	$(REBAR3) dialyzer
 
-shell: compile
-	$(REBAR) shell
+fmt:
+	$(REBAR3) format
+
+shell:
+	@echo "Running $(APP) shell"
+	@$(REBAR3) shell
 
 wshell: compile
 	$(ERL) -args_file config/vm.args -config config/sys.config -pa _build/default/lib/*/ebin --boot start_sasl -s dccaserver
@@ -88,3 +104,9 @@ restart: $(SCRIPT_PATH)
 
 reboot: $(SCRIPT_PATH)
 	@./$(SCRIPT_PATH) reboot
+
+docker:
+	docker build -t $(DOCKERREPO)/$(APP) --build-arg projectname=$(APP) .
+
+docker-run:
+	docker run -d -p 3868:3868 -p 9000:9000 --name $(APP) $(DOCKERREPO)/$(APP)

@@ -1,3 +1,4 @@
+# Build files
 _*
 *.o
 *.beam
@@ -18,7 +19,14 @@ ebin
 log
 doc
 tmp
+
+# Dumps
 erl_crash.dump
 rebar3.crashdump
+
+# Generated files
 apps/dccaserver/src/rfc4006_cc_Gy.erl
 apps/dccaserver/include/rfc4006_cc_Gy.hrl
+
+# Downloaded files
+rebar3

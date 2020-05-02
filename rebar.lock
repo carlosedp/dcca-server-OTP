@@ -1,2 +1,28 @@
-[{<<"goldrush">>,{pkg,<<"goldrush">>,<<"0.1.8">>},1},
- {<<"lager">>,{pkg,<<"lager">>,<<"3.2.1">>},0}].
+{"1.1.0",
+[{<<"accept">>,{pkg,<<"accept">>,<<"0.3.4">>},1},
+ {<<"goldrush">>,{pkg,<<"goldrush">>,<<"0.1.9">>},1},
+ {<<"lager">>,{pkg,<<"lager">>,<<"3.8.0">>},0},
+ {<<"observer_cli">>,{pkg,<<"observer_cli">>,<<"1.5.3">>},0},
+ {<<"prometheus">>,{pkg,<<"prometheus">>,<<"4.5.0">>},0},
+ {<<"prometheus_diameter_collector">>,
+  {git,"https://github.com/travelping/prometheus_diameter_collector.git",
+       {ref,"77185dd41c2f93fe3a359dee852083d053cf748e"}},
+  0},
+ {<<"prometheus_httpd">>,
+  {git,"https://github.com/deadtrickster/prometheus-httpd.git",
+       {ref,"b1ae3bc1e81df6bc1a92083cca6476490045345c"}},
+  0},
+ {<<"prometheus_process_collector">>,
+  {pkg,<<"prometheus_process_collector">>,<<"1.4.5">>},
+  0},
+ {<<"recon">>,{pkg,<<"recon">>,<<"2.5.0">>},1}]}.
+[
+{pkg_hash,[
+ {<<"accept">>, <<"E3A25CBB1F6B51EE5F23D854B72F5A6FC97B42FE7E9FD8290DAA334D59311C64">>},
+ {<<"goldrush">>, <<"F06E5D5F1277DA5C413E84D5A2924174182FB108DABB39D5EC548B27424CD106">>},
+ {<<"lager">>, <<"3402B9A7E473680CA179FC2F1D827CAB88DD37DD1E6113090C6F45EF05228A1C">>},
+ {<<"observer_cli">>, <<"D42E20054116C49D5242D3FF9E1913ACCCEBE6015F449D6E312A5BC160E79A62">>},
+ {<<"prometheus">>, <<"8F4A2246FE0BEB50AF0F77C5E0A5BB78FE575C34A9655D7F8BC743AAD1C6BF76">>},
+ {<<"prometheus_process_collector">>, <<"9BAEA93F5D8C2758DBAD0DE021EF74438D2F81A01D1F24F5EF0BB949A7B4191D">>},
+ {<<"recon">>, <<"2F7FCBEC2C35034BADE2F9717F77059DC54EB4E929A3049CA7BA6775C0BD66CD">>}]}
+].

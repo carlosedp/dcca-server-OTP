@@ -34,6 +34,10 @@
                   lager,
                   sasl,
                   diameter,
+                  prometheus,
+                  prometheus_process_collector,
+                  prometheus_diameter_collector,
+                  prometheus_httpd,
                   ocsgateway
                  ]},
   {mod, { dccaserver_app, []}},

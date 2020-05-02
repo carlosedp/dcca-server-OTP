@@ -39,6 +39,7 @@ start_link() ->
 %%%.
 %%%'   CALLBACKS
 init([]) ->
+    prometheus_httpd:start(),
     DiaServer = {dccaserver,
                  {dccaserver, start_link, []},
                  permanent,

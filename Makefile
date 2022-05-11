@@ -26,9 +26,12 @@ endif
 
 all: compile
 
-compile: $(REBAR3)
+compile: $(REBAR3) deps
 	@echo "Building application"
 	@$(REBAR3) compile
+
+deps:
+	@$(REBAR3) upgrade --all
 
 clean:
 	@$(REBAR3) clean
@@ -74,7 +77,7 @@ dialyzer:
 fmt:
 	$(REBAR3) format
 
-shell:
+shell: compile
 	@echo "Running $(APP) shell"
 	@$(REBAR3) shell
 

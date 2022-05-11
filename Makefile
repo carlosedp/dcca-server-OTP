@@ -38,17 +38,7 @@ clean:
 
 distclean:
 	@$(REBAR3) clean -a
-
-cleanall: distclean
-	@echo
-	@echo "Are you sure? This will clean all untracked and ignored files."
-	@echo "In 5 seconds the following files/dirs will be removed. Ctrl-C to cancel."
-	@echo
 	@rm -rf _build
-	@git clean -n -d -x
-	@echo "..."
-	@sleep 5
-	@git clean -x -d -f
 
 test: all
 	@$(REBAR3) ct
@@ -82,7 +72,7 @@ shell: compile
 	@$(REBAR3) shell
 
 wshell: compile
-	$(ERL) -args_file config/vm.args -config config/sys.config -pa _build/default/lib/*/ebin --boot start_sasl -s dccaserver
+	$(ERL) -args_file config/vm.args -config config/sys.config -pa _build/default/lib/*/ebin --boot start_sasl -s $(APP)
 
 ##
 ## Release commands

@@ -26,8 +26,6 @@
 
 -behaviour(gen_server).
 
--include_lib("diameter/include/diameter.hrl").
--include_lib("diameter/include/diameter_gen_base_rfc6733.hrl").
 -include_lib("diameter_settings.hrl").
 
 %% ------------------------------------------------------------------
@@ -58,9 +56,9 @@
 %% applications each application may have its own, although they could all
 %% be configured with a common callback module.
 -define(SERVICE(Name),
-        [{'Origin-Host', application:get_env(dccaserver, origin_host, "example.com")},
-         {'Origin-Realm', application:get_env(dccaserver, origin_realm, "realm.example.com")},
-         {'Vendor-Id', application:get_env(dccaserver, vendor_id, 0)},
+        [{'Origin-Host', application:get_env(?SERVER, origin_host, "example.com")},
+         {'Origin-Realm', application:get_env(?SERVER, origin_realm, "realm.example.com")},
+         {'Vendor-Id', application:get_env(?SERVER, vendor_id, 0)},
          {'Product-Name', "DCCA Server"},
          {'Auth-Application-Id', [?DCCA_APPLICATION_ID]},
          {application,
@@ -97,11 +95,12 @@ init(State) ->
     SvcName = ?MODULE,
     common_stats:init(?DIA_STATS_TAB, ?DIA_STATS_COUNTERS),
     diameter:start_service(SvcName, ?SERVICE(SvcName)),
-    Ip = application:get_env(dccaserver, diameter_ip, "127.0.0.1"),
-    Port = application:get_env(dccaserver, diameter_port, 3868),
-    Proto = application:get_env(dccaserver, diameter_proto, tcp),
-    listen({address, Proto, element(2, inet:parse_address(Ip)), Port}),
-    lager:info("Diameter DCCA Application started on ~p IP ~s, port ~p~n", [Proto, Ip, Port]),
+    Ip = application:get_env(?SERVER, server_ip, "127.0.0.1"),
+    Port = application:get_env(?SERVER, diameter_port, 3868),
+    Proto = application:get_env(?SERVER, diameter_proto, tcp),
+    listen({address, Proto, Ip, Port}),
+    lager:info("Diameter DCCA Server ~s started on ~p IP ~s, port ~p~n",
+               [?SERVER, Proto, Ip, Port]),
     {ok, State}.
 
 %% @callback gen_server
@@ -141,9 +140,10 @@ terminate(_Reason, _State) ->
 
 %% listen/2
 listen(Name, {address, Protocol, IPAddr, Port}) ->
+    {ok, IP} = inet_parse:address(IPAddr),
     TransportOpts =
         [{transport_module, tmod(Protocol)},
-         {transport_config, [{reuseaddr, true}, {ip, IPAddr}, {port, Port}]}],
+         {transport_config, [{reuseaddr, true}, {ip, IP}, {port, Port}]}],
     diameter:add_transport(Name, {listen, TransportOpts}).
 
 listen(Address) ->

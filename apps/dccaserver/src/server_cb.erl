@@ -25,9 +25,8 @@
 -module(server_cb).
 
 -include_lib("diameter/include/diameter.hrl").
--include_lib("diameter/include/diameter_gen_base_rfc6733.hrl").
--include_lib("rfc4006_cc_Gy.hrl").
 -include_lib("diameter_settings.hrl").
+-include_lib("rfc4006_cc_Gy.hrl").
 
 -define(DIA_STATS_TAB, dcca_stats).
 
@@ -76,8 +75,8 @@ handle_request(#diameter_packet{msg = Req, errors = []}, _SvcName, {_, Caps})
            'Called-Station-Id' = APN} =
         % 'Service-Information' = [ServiceInformation]
         Req,
-    MSISDN = getSubscriptionId(?'MSISDN', Subscription),
-    IMSI = getSubscriptionId(?'IMSI', Subscription),
+    MSISDN = getSubscriptionId(?MSISDN, Subscription),
+    IMSI = getSubscriptionId(?IMSI, Subscription),
     lager:info("{RequestType, ~p}:{RequestNumber, ~p}:{CCR, ~p}:{MSCC, ~p}",
                [ReqType, ReqNum, lager:pr(Req, ?MODULE), lager:pr(MSCC, ?MODULE)]),
     MSCC_Data =

@@ -32,14 +32,8 @@
 -define(DIA_STATS_TAB, dcca_stats).
 
 %% diameter callbacks
--export([peer_up/3,
-         peer_down/3,
-         pick_peer/4,
-         prepare_request/3,
-         prepare_retransmit/3,
-         handle_answer/4,
-         handle_error/4,
-         handle_request/3]).
+-export([peer_up/3, peer_down/3, pick_peer/4, prepare_request/3, prepare_retransmit/3,
+         handle_answer/4, handle_error/4, handle_request/3]).
 
 -define(UNEXPECTED, erlang:error({unexpected, ?MODULE, ?LINE})).
 
@@ -86,9 +80,8 @@ handle_request(#diameter_packet{msg = Req, errors = []}, _SvcName, {_, Caps})
     IMSI = getSubscriptionId(?'IMSI', Subscription),
     lager:info("{RequestType, ~p}:{RequestNumber, ~p}:{CCR, ~p}:{MSCC, ~p}",
                [ReqType, ReqNum, lager:pr(Req, ?MODULE), lager:pr(MSCC, ?MODULE)]),
-    MSCC_Data = process_mscc(ReqType,
-                             MSCC,
-                             {APN, IMSI, MSISDN, "10.0.0.1", SessionId, EventTimestamp}),
+    MSCC_Data =
+        process_mscc(ReqType, MSCC, {APN, IMSI, MSISDN, "10.0.0.1", SessionId, EventTimestamp}),
     {reply, answer(ok, ReqType, ReqNum, SessionId, OH, OR, MSCC_Data)};
 %% ... or one that wasn't. 3xxx errors are answered by diameter itself
 %% but these are 5xxx errors for which we must contruct a reply.
@@ -136,26 +129,23 @@ process_mscc(ReqType, [MSCC | T], SessionData) ->
     % lager:debug("USU: ~w~n",[USU]),
     % lager:debug("RSU: ~w~n",[RSU]),
     case {RSU, USU} of
-      {[_], []} ->
-          % Have RSU. No USU (First interrogation)
-          lager:info("Have RSU. No USU (First interrogation)"),
-          {ResultCode, GrantedUnits} = ocsgateway:ocs_charge({initial,
-                                                              SessionData,
-                                                              {0, ServiceId, RatingGroup}});
-      {[_], [_]} ->
-          % Have RSU. Have USU (Next interrogation)
-          lager:info("Have RSU. Have USU (Next interrogation)"),
-          [#'Used-Service-Unit'{'CC-Total-Octets' = [UsedUnits]}] = USU,
-          {ResultCode, GrantedUnits} = ocsgateway:ocs_charge({update,
-                                                              SessionData,
-                                                              {UsedUnits, ServiceId, RatingGroup}});
-      {[], [_]} ->
-          % No RSU. Have USU (Last interrogation)
-          lager:info("No RSU. Have USU (Last interrogation)"),
-          [#'Used-Service-Unit'{'CC-Total-Octets' = [UsedUnits]}] = USU,
-          {ResultCode, GrantedUnits} = ocsgateway:ocs_charge({terminate,
-                                                              SessionData,
-                                                              {UsedUnits, ServiceId, RatingGroup}})
+        {[_], []} ->
+            % Have RSU. No USU (First interrogation)
+            lager:info("Have RSU. No USU (First interrogation)"),
+            {ResultCode, GrantedUnits} =
+                ocsgateway:ocs_charge({initial, SessionData, {0, ServiceId, RatingGroup}});
+        {[_], [_]} ->
+            % Have RSU. Have USU (Next interrogation)
+            lager:info("Have RSU. Have USU (Next interrogation)"),
+            [#'Used-Service-Unit'{'CC-Total-Octets' = [UsedUnits]}] = USU,
+            {ResultCode, GrantedUnits} =
+                ocsgateway:ocs_charge({update, SessionData, {UsedUnits, ServiceId, RatingGroup}});
+        {[], [_]} ->
+            % No RSU. Have USU (Last interrogation)
+            lager:info("No RSU. Have USU (Last interrogation)"),
+            [#'Used-Service-Unit'{'CC-Total-Octets' = [UsedUnits]}] = USU,
+            {ResultCode, GrantedUnits} =
+                ocsgateway:ocs_charge({terminate, SessionData, {UsedUnits, ServiceId, RatingGroup}})
     end,
     % receive
     %     {ResultCode, GrantedUnits} -> {ResultCode, GrantedUnits}
@@ -217,7 +207,6 @@ mscc_answer([MSCC | T]) ->
      | mscc_answer(T)];
 mscc_answer([]) ->
     [].
-
 
 %% Internal Functions
 

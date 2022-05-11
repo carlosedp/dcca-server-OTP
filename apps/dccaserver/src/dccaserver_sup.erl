@@ -40,11 +40,6 @@ start_link() ->
 %%%'   CALLBACKS
 init([]) ->
     prometheus_httpd:start(),
-    DiaServer = {dccaserver,
-                 {dccaserver, start_link, []},
-                 permanent,
-                 5000,
-                 worker,
-                 [server_cb]},
+    DiaServer =
+        {dccaserver, {dccaserver, start_link, []}, permanent, 5000, worker, [server_cb]},
     {ok, {{one_for_one, 5, 10}, [DiaServer]}}.
-

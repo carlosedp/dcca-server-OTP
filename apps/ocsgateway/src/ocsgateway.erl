@@ -39,11 +39,7 @@
 %% gen_server Function Exports
 %% ------------------------------------------------------------------
 
--export([init/1,
-         handle_call/3,
-         handle_cast/2,
-         handle_info/2,
-         terminate/2,
+-export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
          code_change/3]).
 
 %% ------------------------------------------------------------------
@@ -71,70 +67,70 @@ handle_call({intm, {Event, SessionData, EventData}}, _From, State) ->
     {ConsumedResources, ServiceID, RatingGroup} = EventData,
     StartTime = timestamp(EventTimestamp),
     case Event of
-      initial ->
-          lager:info("[{7,\"OtherParty\",[{5,\"APN\",\"~s\"}]},{3,\"MessageType\",2},{7,\""
-                     "ServedParty\",[{5,\"IMSI\",\"~s\"},{5,\"MSISDN\",\"~s\"},{5,\"Locati"
-                     "on\",\"~s\"}]},{5,\"Version\",\"5.00.0\"},{5,\"SessionId\",\"~s\"},{"
-                     "7,\"Resources\",[{7,\"R_1\",[{5,\"StartTime\",\"~s\"},{1,\"ConsumedR"
-                     "esources\",~B},{5,\"SubServiceType\",\"~2..0B/~3..0B\"},{3,\"Reporti"
-                     "ngReason\",50},{1,\"RequestedResources\",-1},{5,\"ServiceType\",\"GP"
-                     "RS:0:~2..0B:~3..0B\"},{3,\"QuotaType\",0},{3,\"Id\",~B~3..0B}]}]}]~n"
-                     "",
-                     [APN,
-                      IMSI,
-                      MSISDN,
-                      Location,
-                      SessionId,
-                      StartTime,
-                      ConsumedResources,
-                      ServiceID,
-                      RatingGroup,
-                      ServiceID,
-                      RatingGroup,
-                      ServiceID,
-                      RatingGroup]);
-      update ->
-          lager:info("[{7,\"OtherParty\",[{5,\"APN\",\"~s\"}]},{3,\"MessageType\",2},{7,\""
-                     "ServedParty\",[{5,\"IMSI\",\"~s\"},{5,\"MSISDN\",\"~s\"},{5,\"Locati"
-                     "on\",\"~s\"}]},{5,\"Version\",\"5.00.0\"},{5,\"SessionId\",\"~s\"},{"
-                     "7,\"Resources\",[{7,\"R_1\",[{5,\"StartTime\",\"~s\"},{1,\"ConsumedR"
-                     "esources\",~B},{5,\"SubServiceType\",\"~2..0B/~3..0B\"},{3,\"Reporti"
-                     "ngReason\",3},{1,\"RequestedResources\",-1},{5,\"ServiceType\",\"GPR"
-                     "S:0:~2..0B:~3..0B\"},{3,\"QuotaType\",3},{3,\"Id\",~B~3..0B}]}]}]~n",
-                     [APN,
-                      IMSI,
-                      MSISDN,
-                      Location,
-                      SessionId,
-                      StartTime,
-                      ConsumedResources,
-                      ServiceID,
-                      RatingGroup,
-                      ServiceID,
-                      RatingGroup,
-                      ServiceID,
-                      RatingGroup]);
-      terminate ->
-          lager:info("[{7,\"OtherParty\",[{5,\"APN\",\"~s\"}]},{3,\"MessageType\",2},{7,\""
-                     "ServedParty\",[{5,\"IMSI\",\"~s\"},{5,\"MSISDN\",\"~s\"},{5,\"Locati"
-                     "on\",\"~s\"}]},{5,\"Version\",\"5.00.0\"},{5,\"SessionId\",\"~s\"},{"
-                     "7,\"Resources\",[{7,\"R_1\",[{5,\"StartTime\",\"~s\"},{1,\"ConsumedR"
-                     "esources\",~B},{5,\"SubServiceType\",\"~2..0B/~3..0B\"},{3,\"Reporti"
-                     "ngReason\",2},{1,\"RequestedResources\",-1},{5,\"ServiceType\",\"GPR"
-                     "S:0:~2..0B:~3..0B\"},{3,\"QuotaType\",3},{3,\"Id\",~B~3..0B}]}]}]~n",
-                     [APN,
-                      IMSI,
-                      MSISDN,
-                      Location,
-                      SessionId,
-                      StartTime,
-                      ConsumedResources,
-                      ServiceID,
-                      RatingGroup,
-                      ServiceID,
-                      RatingGroup,
-                      ServiceID,
-                      RatingGroup])
+        initial ->
+            lager:info("[{7,\"OtherParty\",[{5,\"APN\",\"~s\"}]},{3,\"MessageType\",2},{7,\""
+                       "ServedParty\",[{5,\"IMSI\",\"~s\"},{5,\"MSISDN\",\"~s\"},{5,\"Locati"
+                       "on\",\"~s\"}]},{5,\"Version\",\"5.00.0\"},{5,\"SessionId\",\"~s\"},{"
+                       "7,\"Resources\",[{7,\"R_1\",[{5,\"StartTime\",\"~s\"},{1,\"ConsumedR"
+                       "esources\",~B},{5,\"SubServiceType\",\"~2..0B/~3..0B\"},{3,\"Reporti"
+                       "ngReason\",50},{1,\"RequestedResources\",-1},{5,\"ServiceType\",\"GP"
+                       "RS:0:~2..0B:~3..0B\"},{3,\"QuotaType\",0},{3,\"Id\",~B~3..0B}]}]}]~n"
+                       "",
+                       [APN,
+                        IMSI,
+                        MSISDN,
+                        Location,
+                        SessionId,
+                        StartTime,
+                        ConsumedResources,
+                        ServiceID,
+                        RatingGroup,
+                        ServiceID,
+                        RatingGroup,
+                        ServiceID,
+                        RatingGroup]);
+        update ->
+            lager:info("[{7,\"OtherParty\",[{5,\"APN\",\"~s\"}]},{3,\"MessageType\",2},{7,\""
+                       "ServedParty\",[{5,\"IMSI\",\"~s\"},{5,\"MSISDN\",\"~s\"},{5,\"Locati"
+                       "on\",\"~s\"}]},{5,\"Version\",\"5.00.0\"},{5,\"SessionId\",\"~s\"},{"
+                       "7,\"Resources\",[{7,\"R_1\",[{5,\"StartTime\",\"~s\"},{1,\"ConsumedR"
+                       "esources\",~B},{5,\"SubServiceType\",\"~2..0B/~3..0B\"},{3,\"Reporti"
+                       "ngReason\",3},{1,\"RequestedResources\",-1},{5,\"ServiceType\",\"GPR"
+                       "S:0:~2..0B:~3..0B\"},{3,\"QuotaType\",3},{3,\"Id\",~B~3..0B}]}]}]~n",
+                       [APN,
+                        IMSI,
+                        MSISDN,
+                        Location,
+                        SessionId,
+                        StartTime,
+                        ConsumedResources,
+                        ServiceID,
+                        RatingGroup,
+                        ServiceID,
+                        RatingGroup,
+                        ServiceID,
+                        RatingGroup]);
+        terminate ->
+            lager:info("[{7,\"OtherParty\",[{5,\"APN\",\"~s\"}]},{3,\"MessageType\",2},{7,\""
+                       "ServedParty\",[{5,\"IMSI\",\"~s\"},{5,\"MSISDN\",\"~s\"},{5,\"Locati"
+                       "on\",\"~s\"}]},{5,\"Version\",\"5.00.0\"},{5,\"SessionId\",\"~s\"},{"
+                       "7,\"Resources\",[{7,\"R_1\",[{5,\"StartTime\",\"~s\"},{1,\"ConsumedR"
+                       "esources\",~B},{5,\"SubServiceType\",\"~2..0B/~3..0B\"},{3,\"Reporti"
+                       "ngReason\",2},{1,\"RequestedResources\",-1},{5,\"ServiceType\",\"GPR"
+                       "S:0:~2..0B:~3..0B\"},{3,\"QuotaType\",3},{3,\"Id\",~B~3..0B}]}]}]~n",
+                       [APN,
+                        IMSI,
+                        MSISDN,
+                        Location,
+                        SessionId,
+                        StartTime,
+                        ConsumedResources,
+                        ServiceID,
+                        RatingGroup,
+                        ServiceID,
+                        RatingGroup,
+                        ServiceID,
+                        RatingGroup])
     end,
     GrantedQuota = 300000,
     ResultCode = 1,
@@ -162,4 +158,3 @@ timestamp([]) ->
     {YY, MM, DD} = date(),
     {Hour, Min, Sec} = time(),
     io_lib:format("~4..0w~2..0w~2..0w~2..0w~2..0w~2..0w", [YY, MM, DD, Hour, Min, Sec]).
-

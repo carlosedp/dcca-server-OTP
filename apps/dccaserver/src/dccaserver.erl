@@ -71,9 +71,9 @@
 %% ------------------------------------------------------------------
 
 %% @doc starts gen_server implementation and caller links to the process too.
--spec start_link() -> {ok, Pid} | ignore | {error, Error} when Pid :: pid(),
-                                                               Error :: {already_started, Pid} |
-                                                                        term().
+-spec start_link() -> {ok, Pid} | ignore | {error, Error}
+    when Pid :: pid(),
+         Error :: {already_started, Pid} | term().
 start_link() ->
     % TODO: decide whether to name gen_server callback implementation or not.
     % gen_server:start_link(?MODULE, [], []). % for unnamed gen_server
@@ -141,8 +141,9 @@ terminate(_Reason, _State) ->
 
 %% listen/2
 listen(Name, {address, Protocol, IPAddr, Port}) ->
-    TransportOpts = [{transport_module, tmod(Protocol)},
-                     {transport_config, [{reuseaddr, true}, {ip, IPAddr}, {port, Port}]}],
+    TransportOpts =
+        [{transport_module, tmod(Protocol)},
+         {transport_config, [{reuseaddr, true}, {ip, IPAddr}, {port, Port}]}],
     diameter:add_transport(Name, {listen, TransportOpts}).
 
 listen(Address) ->
@@ -153,4 +154,3 @@ tmod(tcp) ->
     diameter_tcp;
 tmod(sctp) ->
     diameter_sctp.
-

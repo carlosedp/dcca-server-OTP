@@ -93,7 +93,6 @@ stop() ->
 %% ------------------------------------------------------------------
 init(State) ->
     SvcName = ?MODULE,
-    common_stats:init(?DIA_STATS_TAB, ?DIA_STATS_COUNTERS),
     diameter:start_service(SvcName, ?SERVICE(SvcName)),
     Ip = application:get_env(?SERVER, server_ip, "127.0.0.1"),
     Port = application:get_env(?SERVER, diameter_port, 3868),
@@ -123,7 +122,6 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% @callback gen_server
 terminate(normal, _State) ->
-    common_stats:terminate(?DIA_STATS_TAB),
     diameter:stop_service(?SVC_NAME),
     lager:info("Diameter DCCA Application stopped.~n"),
     ok;

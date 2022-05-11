@@ -28,8 +28,6 @@
 -include_lib("diameter_settings.hrl").
 -include_lib("rfc4006_cc_Gy.hrl").
 
--define(DIA_STATS_TAB, dcca_stats).
-
 %% diameter callbacks
 -export([peer_up/3, peer_down/3, pick_peer/4, prepare_request/3, prepare_retransmit/3,
          handle_answer/4, handle_error/4, handle_request/3]).
@@ -117,7 +115,6 @@ getSubscriptionId(_, []) ->
 
 %% Process MSCC
 process_mscc(ReqType, [MSCC | T], SessionData) ->
-    common_stats:inc(?DIA_STATS_TAB, dia_input_update_OK),
     % lager:debug("Process_MSCC ~p~n", [MSCC]),
     % lager:debug("Process_MSCC T ~p~n", [T]),
     #'Multiple-Services-Credit-Control'{'Used-Service-Unit' = USU,
@@ -163,7 +160,6 @@ process_mscc(_, [], _) ->
 %% client.erl sends.
 
 answer(ok, ReqType, ReqNum, SessionId, OH, OR, MSCC) ->
-    common_stats:inc(?DIA_STATS_TAB, event_OK),
     CCA = #'CCA'{'Result-Code' = 2001, %% DIAMETER_SUCCESS
                  'Origin-Host' = OH,
                  'Origin-Realm' = OR,
@@ -175,7 +171,6 @@ answer(ok, ReqType, ReqNum, SessionId, OH, OR, MSCC) ->
                  'Multiple-Services-Credit-Control' = mscc_answer(MSCC)},
     CCA;
 answer(err, ReqType, ReqNum, SessionId, OH, OR, []) ->
-    common_stats:inc(?DIA_STATS_TAB, event_ERR),
     CCA = #'CCA'{'Result-Code' = 5012, %% DIAMETER_UNABLE_TO_COMPLY
                  'Origin-Host' = OH,
                  'Origin-Realm' = OR,

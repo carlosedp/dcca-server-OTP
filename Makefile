@@ -65,7 +65,8 @@ xref:
 	$(REBAR3) xref
 
 dialyzer:
-	$(REBAR3) dialyzer
+	@$(REBAR3) dialyzer || true
+	@$(REBAR3) dialyzer_html
 
 fmt:
 	$(REBAR3) format

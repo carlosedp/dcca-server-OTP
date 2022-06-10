@@ -44,9 +44,6 @@
 %%%.
 %%%'   Diameter Application Definitions
 
-%% Diameter stats
--define(DIA_STATS_TAB, dcca_stats).
--define(DIA_STATS_COUNTERS, [event_OK, event_ERR]).
 %% Server parameters
 -define(SVC_NAME, ?MODULE).
 -define(APP_ALIAS, ?MODULE).
@@ -63,6 +60,17 @@
          {'Auth-Application-Id', [?DCCA_APPLICATION_ID]},
          {application,
           [{alias, ?APP_ALIAS}, {dictionary, ?DIAMETER_DICT_CCRA}, {module, ?CALLBACK_MOD}]}]).
+
+%% Application Prometheus Metrics
+init_metrics() ->
+    {_, Port} =
+        lists:keyfind(port, 1, application:get_env(prometheus, prometheus_http, 1234)),
+
+    lager:info("Initializing Prometheus Metrics on address http://~s:~p/metrics~n",
+               [application:get_env(?SERVER, server_ip, "0.0.0.0"), Port]),
+    prometheus_counter:new([{name, dcca_mscc_interrogation},
+                            {help, "MSCC Interrogation counter by type"},
+                            {labels, [type]}]).
 
 %% ------------------------------------------------------------------
 %% API Function Definitions
@@ -98,6 +106,7 @@ init(State) ->
     Port = application:get_env(?SERVER, diameter_port, 3868),
     Proto = application:get_env(?SERVER, diameter_proto, tcp),
     listen({address, Proto, Ip, Port}),
+    init_metrics(),
     lager:info("Diameter DCCA Server ~s started on ~p IP ~s, port ~p~n",
                [?SERVER, Proto, Ip, Port]),
     {ok, State}.

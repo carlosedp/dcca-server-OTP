@@ -128,17 +128,20 @@ process_mscc(ReqType, [MSCC | T], SessionData) ->
         {[_], []} ->
             % Have RSU. No USU (First interrogation)
             lager:info("Have RSU. No USU (First interrogation)"),
+            prometheus_counter:inc(dcca_mscc_interrogation, [first]),
             {ResultCode, GrantedUnits} =
                 ocsgateway:ocs_charge({initial, SessionData, {0, ServiceId, RatingGroup}});
         {[_], [_]} ->
             % Have RSU. Have USU (Next interrogation)
             lager:info("Have RSU. Have USU (Next interrogation)"),
+            prometheus_counter:inc(dcca_mscc_interrogation, [next]),
             [#'Used-Service-Unit'{'CC-Total-Octets' = [UsedUnits]}] = USU,
             {ResultCode, GrantedUnits} =
                 ocsgateway:ocs_charge({update, SessionData, {UsedUnits, ServiceId, RatingGroup}});
         {[], [_]} ->
             % No RSU. Have USU (Last interrogation)
             lager:info("No RSU. Have USU (Last interrogation)"),
+            prometheus_counter:inc(dcca_mscc_interrogation, [last]),
             [#'Used-Service-Unit'{'CC-Total-Octets' = [UsedUnits]}] = USU,
             {ResultCode, GrantedUnits} =
                 ocsgateway:ocs_charge({terminate, SessionData, {UsedUnits, ServiceId, RatingGroup}})

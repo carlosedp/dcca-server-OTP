@@ -2,6 +2,7 @@ APP					= dccaserver
 DOCKERREPO			= carlosedp
 APPS				:= $(shell ls apps)
 REL_DIR				= _build/default/rel
+APP_FILES = $(wildcard apps/*/*) $(wildcard config/*)
 
 REBAR3_URL=https://s3.amazonaws.com/rebar3/rebar3
 ifeq ($(wildcard rebar3),rebar3)
@@ -16,10 +17,10 @@ endif
 
 ifeq ($(OS),Windows_NT)
 		ERL ?= werl
-		SCRIPT_PATH  := $(REL_DIR)/$(APP)/bin/$(APP).cmd
+		RELEASE_SCRIPT  := $(REL_DIR)/$(APP)/bin/$(APP).cmd
 else
 		ERL ?= erl
-		SCRIPT_PATH  := $(REL_DIR)/$(APP)/bin/$(APP)
+		RELEASE_SCRIPT  := $(REL_DIR)/$(APP)/bin/$(APP)
 endif
 
 .PHONY: all compile clean distclean cleanall test rel prod doc
@@ -43,8 +44,10 @@ distclean:
 test: all
 	@$(REBAR3) ct
 
-rel:
+$(RELEASE_SCRIPT): Makefile $(APP_FILES)
 	@$(REBAR3) release
+
+rel: $(RELEASE_SCRIPT)
 
 prod: compile
 	$(REBAR3) as prod release
@@ -77,26 +80,29 @@ wshell: compile
 ##
 ## Release commands
 ##
-start: $(SCRIPT_PATH)
-	@./$(SCRIPT_PATH) start
+status: $(RELEASE_SCRIPT)
+	@./$(RELEASE_SCRIPT) status || true
 
-stop: $(SCRIPT_PATH)
-	@./$(SCRIPT_PATH) stop
+start: $(RELEASE_SCRIPT)
+	@./$(RELEASE_SCRIPT) daemon || true
 
-ping: $(SCRIPT_PATH)
-	@./$(SCRIPT_PATH) ping
+stop: $(RELEASE_SCRIPT)
+	@./$(RELEASE_SCRIPT) stop || true
 
-attach: $(SCRIPT_PATH)
-	@./$(SCRIPT_PATH) attach
+ping: $(RELEASE_SCRIPT)
+	@./$(RELEASE_SCRIPT) ping || true
 
-console: $(SCRIPT_PATH) compile
-	@./$(SCRIPT_PATH) console
+attach: $(RELEASE_SCRIPT)
+	@./$(RELEASE_SCRIPT) daemon_attach || true
 
-restart: $(SCRIPT_PATH)
-	@./$(SCRIPT_PATH) restart
+console: $(RELEASE_SCRIPT)
+	@./$(RELEASE_SCRIPT) console || true
 
-reboot: $(SCRIPT_PATH)
-	@./$(SCRIPT_PATH) reboot
+restart: $(RELEASE_SCRIPT)
+	@./$(RELEASE_SCRIPT) restart || true
+
+reboot: $(RELEASE_SCRIPT)
+	@./$(RELEASE_SCRIPT) reboot || true
 
 docker:
 	docker build -t $(DOCKERREPO)/$(APP) --build-arg projectname=$(APP) .

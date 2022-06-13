@@ -84,6 +84,9 @@ wshell: compile
 status: $(RELEASE_SCRIPT)
 	@./$(RELEASE_SCRIPT) status || true
 
+fg: $(RELEASE_SCRIPT)
+	@./$(RELEASE_SCRIPT) foreground || true
+
 start: $(RELEASE_SCRIPT)
 	@./$(RELEASE_SCRIPT) daemon || true
 
@@ -110,3 +113,6 @@ docker:
 
 docker-run:
 	docker run -d -p 3868:3868 -p 9000:9000 --name $(APP) $(DOCKERREPO)/$(APP)
+
+stack:
+	docker-compose up -d

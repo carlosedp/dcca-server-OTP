@@ -1,0 +1,37 @@
+version: '2'
+
+services:
+  dcca-server:
+    ports:
+      - "3868:3868"
+      - "9000:9000"
+    container_name: dcca-server-1
+    environment:
+      projectname: dccaserver
+    image: carlosedp/dcca-server-otp:latest
+    build:
+      context: .
+      args:
+        projectname: dccaserver
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - "./monitoring/prometheus-config:/data"
+    command: "--config.file=/data/prometheus.yml"
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./monitoring/grafana-config/provisioning:/etc/grafana/provisioning"
+      - "./monitoring/grafana-config/dashboards:/var/lib/grafana/dashboards/provisioning"
+    depends_on:
+      - prometheus

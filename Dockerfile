@@ -1,9 +1,9 @@
 # Build stage 0
-ARG projectname
-FROM erlang:alpine as builder
+FROM erlang:25-alpine as builder
 
 # Install some libs
-RUN apk add --no-cache make
+RUN apk add --no-cache ncurses-libs && \
+    apk add --no-cache alpine-sdk
 
 # Set working directory
 RUN mkdir /buildroot
@@ -16,17 +16,17 @@ ADD . /buildroot
 RUN make prod
 
 # Production container
-FROM alpine
-ARG projectname
+FROM alpine as prod
 
-ENV projectname=$projectname
 # Install some libs
 RUN apk add --no-cache openssl && \
-    apk add --no-cache ncurses-libs
+    apk add --no-cache ncurses-libs && \
+    apk add --no-cache libstdc++
 
 # Install the released application
-COPY --from=builder /buildroot/_build/prod/rel/$projectname /$projectname
+COPY --from=builder /buildroot/_build/prod/rel/dccaserver /dccaserver
 
 # Expose relevant ports
 EXPOSE 3868 9000
-CMD ["/bin/sh", "-c", "/$projectname/bin/$projectname", "foreground"]
+
+CMD ["/dccaserver/bin/dccaserver", "foreground"]

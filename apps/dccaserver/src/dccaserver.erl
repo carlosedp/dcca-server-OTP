@@ -52,34 +52,38 @@
 %% The service configuration. In a server supporting multiple Diameter
 %% applications each application may have its own, although they could all
 %% be configured with a common callback module.
--define(SERVICE(Name),
-        [{'Origin-Host', application:get_env(?SERVER, origin_host, "example.com")},
-         {'Origin-Realm', application:get_env(?SERVER, origin_realm, "realm.example.com")},
-         {'Vendor-Id', application:get_env(?SERVER, vendor_id, 0)},
-         {'Product-Name', "DCCA Server"},
-         {'Auth-Application-Id', [?DCCA_APPLICATION_ID]},
-         {application,
-          [{alias, ?APP_ALIAS}, {dictionary, ?DIAMETER_DICT_CCRA}, {module, ?CALLBACK_MOD}]}]).
+-define(SERVICE(Name), [
+    {'Origin-Host', application:get_env(?SERVER, origin_host, "example.com")},
+    {'Origin-Realm', application:get_env(?SERVER, origin_realm, "realm.example.com")},
+    {'Vendor-Id', application:get_env(?SERVER, vendor_id, 0)},
+    {'Product-Name', "DCCA Server"},
+    {'Auth-Application-Id', [?DCCA_APPLICATION_ID]},
+    {application, [{alias, ?APP_ALIAS}, {dictionary, ?DIAMETER_DICT_CCRA}, {module, ?CALLBACK_MOD}]}
+]).
 
 %% Application Prometheus Metrics
 init_metrics() ->
     {_, Port} =
         lists:keyfind(port, 1, application:get_env(prometheus, prometheus_http, 1234)),
 
-    lager:info("Initializing Prometheus Metrics on address http://~s:~p/metrics~n",
-               [application:get_env(?SERVER, server_ip, "0.0.0.0"), Port]),
-    prometheus_counter:new([{name, dcca_mscc_interrogation},
-                            {help, "MSCC Interrogation counter by type"},
-                            {labels, [type]}]).
+    lager:info(
+        "Initializing Prometheus Metrics on http://[nodeip]:~p/metrics~n",
+        [Port]
+    ),
+    prometheus_counter:new([
+        {name, dcca_mscc_interrogation},
+        {help, "MSCC Interrogation counter by type"},
+        {labels, [svc, type]}
+    ]).
 
 %% ------------------------------------------------------------------
 %% API Function Definitions
 %% ------------------------------------------------------------------
 
 %% @doc starts gen_server implementation and caller links to the process too.
--spec start_link() -> {ok, Pid} | ignore | {error, Error}
-    when Pid :: pid(),
-         Error :: {already_started, Pid} | term().
+-spec start_link() -> {ok, Pid} | ignore | {error, Error} when
+    Pid :: pid(),
+    Error :: {already_started, Pid} | term().
 start_link() ->
     % TODO: decide whether to name gen_server callback implementation or not.
     % gen_server:start_link(?MODULE, [], []). % for unnamed gen_server
@@ -102,13 +106,15 @@ stop() ->
 init(State) ->
     SvcName = ?MODULE,
     diameter:start_service(SvcName, ?SERVICE(SvcName)),
-    Ip = application:get_env(?SERVER, server_ip, "127.0.0.1"),
     Port = application:get_env(?SERVER, diameter_port, 3868),
     Proto = application:get_env(?SERVER, diameter_proto, tcp),
-    listen({address, Proto, Ip, Port}),
+    listen({address, Proto, Port}),
     init_metrics(),
-    lager:info("Diameter DCCA Server ~s started on ~p IP ~s, port ~p~n",
-               [?SERVER, Proto, Ip, Port]),
+
+    lager:info(
+        "Diameter DCCA Server ~s started on ~p IPs ~s, port ~p~n",
+        [?SERVER, Proto, ip_string(), Port]
+    ),
     {ok, State}.
 
 %% @callback gen_server
@@ -146,15 +152,25 @@ terminate(_Reason, _State) ->
 %% ------------------------------------------------------------------
 
 %% listen/2
-listen(Name, {address, Protocol, IPAddr, Port}) ->
-    {ok, IP} = inet_parse:address(IPAddr),
+listen(Name, {address, Protocol, Port}) ->
     TransportOpts =
-        [{transport_module, tmod(Protocol)},
-         {transport_config, [{reuseaddr, true}, {ip, IP}, {port, Port}]}],
+        [{transport_module, tmod(Protocol)}] ++ build_opts(Port),
     diameter:add_transport(Name, {listen, TransportOpts}).
 
 listen(Address) ->
     listen(?SVC_NAME, Address).
+
+get_ips() ->
+    {ok, Interfaces} = inet:getif(),
+    [IP || {IP, _, _} <- Interfaces].
+
+ip_string() ->
+    string:join([inet:ntoa(IP) || IP <- get_ips()], ",").
+
+build_opts(Port) ->
+    IPs = get_ips(),
+    Transport_Configs = [[{reuseaddr, true}, {ip, IP}, {port, Port}] || IP <- IPs],
+    [{transport_config, T} || T <- Transport_Configs].
 
 %% Convert connection type
 tmod(tcp) ->

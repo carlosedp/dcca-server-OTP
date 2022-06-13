@@ -22,21 +22,22 @@
 %%
 %% -------------------------------------------------------------------
 
-{application,
- dccaserver,
- [{description, "Diameter DCCA Server"},
-  {vsn, "1"},
-  {registered, []},
-  {applications,
-   [kernel,
-    stdlib,
-    lager,
-    sasl,
-    diameter,
-    prometheus,
-    prometheus_process_collector,
-    prometheus_diameter_collector,
-    prometheus_httpd,
-    ocsgateway]},
-  {mod, {dccaserver_app, []}},
-  {env, []}]}.
+{application, dccaserver, [
+    {description, "Diameter DCCA Server"},
+    {vsn, "1"},
+    {registered, []},
+    {applications, [
+        kernel,
+        stdlib,
+        lager,
+        sasl,
+        diameter,
+        prometheus,
+        prometheus_process_collector,
+        prometheus_diameter_collector,
+        prometheus_httpd,
+        ocsgateway
+    ]},
+    {mod, {dccaserver_app, []}},
+    {env, []}
+]}.

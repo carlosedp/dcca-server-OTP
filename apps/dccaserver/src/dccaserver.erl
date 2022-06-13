@@ -111,10 +111,9 @@ init(State) ->
     listen({address, Proto, Port}),
     init_metrics(),
 
-    lager:info(
-        "Diameter DCCA Server ~s started on ~p IPs ~s, port ~p~n",
-        [?SERVER, Proto, ip_string(), Port]
-    ),
+    lager:info("Diameter DCCA Server ~s started on ~p IPs ~s, port ~p~n", [
+        ?SERVER, Proto, ip_string(), Port
+    ]),
     {ok, State}.
 
 %% @callback gen_server
@@ -164,13 +163,12 @@ get_ips() ->
     {ok, Interfaces} = inet:getif(),
     [IP || {IP, _, _} <- Interfaces].
 
+build_opts(Port) ->
+    Transport_Configs = [[{reuseaddr, true}, {ip, IP}, {port, Port}] || IP <- get_ips()],
+    [{transport_config, T} || T <- Transport_Configs].
+
 ip_string() ->
     string:join([inet:ntoa(IP) || IP <- get_ips()], ",").
-
-build_opts(Port) ->
-    IPs = get_ips(),
-    Transport_Configs = [[{reuseaddr, true}, {ip, IP}, {port, Port}] || IP <- IPs],
-    [{transport_config, T} || T <- Transport_Configs].
 
 %% Convert connection type
 tmod(tcp) ->

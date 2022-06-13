@@ -80,10 +80,9 @@ handle_request(#diameter_packet{msg = Req, errors = []}, _SvcName, {_, Caps}) wh
         'Event-Timestamp' = EventTimestamp,
         'Subscription-Id' = Subscription,
         'Multiple-Services-Credit-Control' = MSCC,
-        'Called-Station-Id' = APN
-    } =
         % 'Service-Information' = [ServiceInformation]
-        Req,
+        'Called-Station-Id' = APN
+    } = Req,
     MSISDN = getSubscriptionId(?MSISDN, Subscription),
     IMSI = getSubscriptionId(?IMSI, Subscription),
     lager:info(
@@ -105,8 +104,7 @@ handle_request(#diameter_packet{msg = Req, errors = Err}, _SvcName, {_, Caps}) w
         'CC-Request-Type' = ReqType,
         'CC-Request-Number' = ReqNum,
         'Multiple-Services-Credit-Control' = MSCC
-    } =
-        Req,
+    } = Req,
     lager:info(
         "{RequestType, ~p}:{RequestNumber, ~p}:{Error, ~p}:{CCR, ~p}:{MSCC, "
         "~p}",
@@ -140,8 +138,7 @@ process_mscc(ReqType, [MSCC | T], SessionData) ->
         'Requested-Service-Unit' = RSU,
         'Service-Identifier' = [ServiceId],
         'Rating-Group' = [RatingGroup]
-    } =
-        MSCC,
+    } = MSCC,
     % lager:debug("USU: ~w~n",[USU]),
     % lager:debug("RSU: ~w~n",[RSU]),
     case {RSU, USU} of
@@ -189,7 +186,7 @@ process_mscc(_, [], _) ->
 
 answer(ok, ReqType, ReqNum, SessionId, OH, OR, MSCC) ->
     %% DIAMETER_SUCCESS
-    CCA = #'CCA'{
+    #'CCA'{
         'Result-Code' = 2001,
         'Origin-Host' = OH,
         'Origin-Realm' = OR,
@@ -199,11 +196,10 @@ answer(ok, ReqType, ReqNum, SessionId, OH, OR, MSCC) ->
         'CC-Request-Number' = ReqNum,
         %'Termination-Cause' = [] %% Only used on TERMINATE
         'Multiple-Services-Credit-Control' = mscc_answer(MSCC)
-    },
-    CCA;
+    };
 answer(err, ReqType, ReqNum, SessionId, OH, OR, []) ->
     %% DIAMETER_UNABLE_TO_COMPLY
-    CCA = #'CCA'{
+    #'CCA'{
         'Result-Code' = 5012,
         'Origin-Host' = OH,
         'Origin-Realm' = OR,
@@ -211,8 +207,7 @@ answer(err, ReqType, ReqNum, SessionId, OH, OR, []) ->
         'Auth-Application-Id' = ?DCCA_APPLICATION_ID,
         'CC-Request-Type' = ReqType,
         'CC-Request-Number' = ReqNum
-    },
-    CCA.
+    }.
 
 mscc_answer([MSCC | T]) ->
     % lager:debug("mscc_answer:~n"),

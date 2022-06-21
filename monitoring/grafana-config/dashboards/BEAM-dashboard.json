@@ -263,7 +263,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(erlang_vm_statistics_context_switches{instance=\"$node\"}[$interval])",
+              "expr": "irate(erlang_vm_statistics_context_switches{instance=\"$node\"}[$__rate_interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Context Switches",
@@ -271,7 +271,7 @@
               "step": 2
             },
             {
-              "expr": "irate(erlang_vm_statistics_reductions_total{instance=\"$node\"}[$interval])",
+              "expr": "irate(erlang_vm_statistics_reductions_total{instance=\"$node\"}[$__rate_interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Reductions",
@@ -279,7 +279,7 @@
               "step": 2
             },
             {
-              "expr": "irate(erlang_vm_statistics_runtime_milliseconds{instance=\"$node\"}[$interval])",
+              "expr": "irate(erlang_vm_statistics_runtime_milliseconds{instance=\"$node\"}[$__rate_interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Runtime",
@@ -447,7 +447,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(erlang_vm_statistics_bytes_output_total{instance=\"$node\"}[$interval])",
+              "expr": "irate(erlang_vm_statistics_bytes_output_total{instance=\"$node\"}[$__rate_interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Output Bytes",
@@ -456,7 +456,7 @@
               "step": 2
             },
             {
-              "expr": "irate(erlang_vm_statistics_bytes_received_total{instance=\"$node\"}[$interval])",
+              "expr": "irate(erlang_vm_statistics_bytes_received_total{instance=\"$node\"}[$__rate_interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Received Bytes",
@@ -546,7 +546,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(erlang_vm_statistics_garbage_collection_number_of_gcs{instance=\"$node\"}[$interval])",
+              "expr": "irate(erlang_vm_statistics_garbage_collection_number_of_gcs{instance=\"$node\"}[$__rate_interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Number of GCs",
@@ -555,7 +555,7 @@
               "step": 2
             },
             {
-              "expr": "irate(erlang_vm_statistics_garbage_collection_bytes_reclaimed{instance=\"$node\"}[$interval])",
+              "expr": "irate(erlang_vm_statistics_garbage_collection_bytes_reclaimed{instance=\"$node\"}[$__rate_interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Bytes Reclaimed",
@@ -973,7 +973,7 @@
               "step": 2
             },
             {
-              "expr": "sum(irate(process_cpu_seconds_total{instance=\"$node\"}[$interval])) without (kind) * 100",
+              "expr": "sum(irate(process_cpu_seconds_total{instance=\"$node\"}[$__rate_interval])) without (kind) * 100",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "CPU",

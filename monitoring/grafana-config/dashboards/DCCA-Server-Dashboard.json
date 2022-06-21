@@ -253,7 +253,7 @@
             "type": "prometheus",
             "uid": "P1809F7CD0C75ACF3"
           },
-          "expr": "sum(irate(process_cpu_seconds_total{instance=\"$node\"}[30s])) without (kind) * 100",
+          "expr": "sum(irate(process_cpu_seconds_total{instance=\"$node\"}[$__rate_interval])) without (kind) * 100",
           "refId": "A"
         }
       ],
@@ -908,7 +908,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "rate(diameter_messages{svc=\"$diameter_service\"}[1m])",
+          "expr": "rate(diameter_messages{svc=\"$diameter_service\"}[$__rate_interval])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Diameter {{direction}} {{msg}}",
@@ -1004,7 +1004,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "sum(rate(dcca_mscc_interrogation{svc=\"$diameter_service\"}[1m]))",
+          "expr": "sum(rate(dcca_mscc_interrogation{svc=\"$diameter_service\"}[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "MSCC Rate",
@@ -1017,7 +1017,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "rate(dcca_mscc_interrogation{svc=\"$diameter_service\", type=\"first\"}[1m])",
+          "expr": "rate(dcca_mscc_interrogation{svc=\"$diameter_service\", type=\"first\"}[$__rate_interval])",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -1031,7 +1031,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "rate(dcca_mscc_interrogation{svc=\"$diameter_service\", type=\"next\"}[1m])",
+          "expr": "rate(dcca_mscc_interrogation{svc=\"$diameter_service\", type=\"next\"}[$__rate_interval])",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -1045,7 +1045,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "editorMode": "code",
-          "expr": "rate(dcca_mscc_interrogation{svc=\"$diameter_service\", type=\"last\"}[1m])",
+          "expr": "rate(dcca_mscc_interrogation{svc=\"$diameter_service\", type=\"last\"}[$__rate_interval])",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -1381,7 +1381,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(erlang_vm_statistics_garbage_collection_number_of_gcs{instance=\"$node\"}[5m])",
+              "expr": "irate(erlang_vm_statistics_garbage_collection_number_of_gcs{instance=\"$node\"}[$__rate_interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Number of GCs",
@@ -1390,7 +1390,7 @@
               "step": 2
             },
             {
-              "expr": "irate(erlang_vm_statistics_garbage_collection_bytes_reclaimed{instance=\"$node\"}[5m])",
+              "expr": "irate(erlang_vm_statistics_garbage_collection_bytes_reclaimed{instance=\"$node\"}[$__rate_interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Bytes Reclaimed",
@@ -1516,7 +1516,7 @@
               "step": 2
             },
             {
-              "expr": "sum(irate(process_cpu_seconds_total{instance=\"$node\"}[30s])) without (kind) * 100",
+              "expr": "sum(irate(process_cpu_seconds_total{instance=\"$node\"}[$__rate_interval])) without (kind) * 100",
               "intervalFactor": 2,
               "legendFormat": "CPU",
               "refId": "B",
@@ -1611,7 +1611,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(erlang_vm_statistics_context_switches{instance=\"$node\"}[5m])",
+              "expr": "irate(erlang_vm_statistics_context_switches{instance=\"$node\"}[$__rate_interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Context Switches",
@@ -1619,7 +1619,7 @@
               "step": 2
             },
             {
-              "expr": "irate(erlang_vm_statistics_reductions_total{instance=\"$node\"}[5m])",
+              "expr": "irate(erlang_vm_statistics_reductions_total{instance=\"$node\"}[$__rate_interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Reductions",
@@ -1627,7 +1627,7 @@
               "step": 2
             },
             {
-              "expr": "irate(erlang_vm_statistics_runtime_milliseconds{instance=\"$node\"}[5m])",
+              "expr": "irate(erlang_vm_statistics_runtime_milliseconds{instance=\"$node\"}[$__rate_interval])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "Runtime",
@@ -1742,7 +1742,7 @@
                 "type": "prometheus",
                 "uid": "P1809F7CD0C75ACF3"
               },
-              "expr": "irate(erlang_vm_statistics_bytes_output_total{instance=\"$node\"}[5m])",
+              "expr": "irate(erlang_vm_statistics_bytes_output_total{instance=\"$node\"}[$__rate_interval])",
               "intervalFactor": 2,
               "legendFormat": "Output Bytes",
               "metric": "erlang_vm_statistics_bytes_output_total",
@@ -1754,7 +1754,7 @@
                 "type": "prometheus",
                 "uid": "P1809F7CD0C75ACF3"
               },
-              "expr": "irate(erlang_vm_statistics_bytes_received_total{instance=\"$node\"}[5m])",
+              "expr": "irate(erlang_vm_statistics_bytes_received_total{instance=\"$node\"}[$__rate_interval])",
               "intervalFactor": 2,
               "legendFormat": "Received Bytes",
               "metric": "erlang_vm_statistics_bytes_received_total",

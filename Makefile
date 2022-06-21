@@ -9,6 +9,15 @@ ifeq ($(wildcard rebar3),rebar3)
 REBAR3 = $(CURDIR)/rebar3
 endif
 
+UNAME := $(shell uname)
+ifeq ($(UNAME), Linux)
+GET_IP="ip a"
+endif
+ifeq ($(UNAME), Darwin)
+GET_IP="ifconfig"
+endif
+INTERFACE_IP=$(shell ${GET_IP} | grep "inet " | grep -Fv 127.0.0.1 | cut -d/ -f1  | awk '{print $$2}' |head -1)
+
 REBAR3 ?= $(shell test -e `which rebar3` 2>/dev/null && which rebar3 || echo "./rebar3")
 
 ifeq ($(REBAR3),)
@@ -108,6 +117,9 @@ restart: $(RELEASE_SCRIPT)
 reboot: $(RELEASE_SCRIPT)
 	@./$(RELEASE_SCRIPT) reboot || true
 
+##
+## Docker and testing commands
+##
 docker:
 	docker build -t $(DOCKERREPO)/$(APP) --build-arg projectname=$(APP) .
 
@@ -117,5 +129,5 @@ docker-run:
 stack:
 	docker-compose up --build -d
 
-seagull-test:
-	docker run -it --rm -v $(PWD):/src -w /src docker.io/carlosedp/docker-seagull ./gprs.sh
+seagull:
+	docker run -it --rm -v $(PWD)/test/seagull:/src -w /src --add-host=dccaserver:${INTERFACE_IP} docker.io/carlosedp/docker-seagull ./gprs.sh

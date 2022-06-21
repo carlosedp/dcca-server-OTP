@@ -92,7 +92,7 @@ If using the client sample application, clone the repository linked above and in
 
 Seagull can be used to generate Diameter traffic to the server. The configuration, scenario xml and start scripts are in `test/seagull` dir.
 
-Test can be run with `make seagull` that will use Docker with the application and the test configs provided here. Before running, adjust the server IP in the `conf_GPRS.xml` file.
+Test can be run with `make seagull` that will use Docker with the application and the test configs provided here. Before running, adjust the server IP in the `conf_GPRS.xml` file if needed (currently calls hostname `dccaserver` that is passed thru Docker).
 
 Also the application can be installed from [http://gull.sourceforge.net/doc/](http://gull.sourceforge.net/doc/).
 

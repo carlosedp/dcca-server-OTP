@@ -3,7 +3,7 @@
 <configuration name="IP Client Conf">
 	<!-- <include file="conf_trans.xml"></include> -->
 	<define entity="transport" name="trans-1" file="libtrans_ip.so" create_function="create_cipio_instance" delete_function="delete_cipio_instance" init-args="type=tcp"></define>
-	<define entity="channel" name="channel-1" global="yes" protocol="diameter-v1" transport="trans-1" open-args="mode=client;dest=127.0.0.1:3868"></define>
+	<define entity="channel" name="channel-1" global="yes" protocol="diameter-v1" transport="trans-1" open-args="mode=client;dest=dccaserver:3868"></define>
 	<!-- <include file="conf_para.xml"></include> -->
 	<define entity="traffic-param" name="call-rate" value="4"></define>
 	<define entity="traffic-param" name="call-rate-scale" value="1000"></define>

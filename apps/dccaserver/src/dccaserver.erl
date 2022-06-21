@@ -153,8 +153,13 @@ terminate(_Reason, _State) ->
 
 %% listen/2
 listen(Name, {address, Protocol, Port}) ->
+    % Listen on all interfaces
+    {ok, IP} = inet_parse:address("0.0.0.0"),
     TransportOpts =
-        [{transport_module, tmod(Protocol)}] ++ build_opts(Port),
+        [
+            {transport_module, tmod(Protocol)},
+            {transport_config, [{reuseaddr, true}, {ip, IP}, {port, Port}]}
+        ],
     diameter:add_transport(Name, {listen, TransportOpts}).
 
 listen(Address) ->
@@ -164,11 +169,6 @@ listen(Address) ->
 get_ips() ->
     {ok, Interfaces} = inet:getif(),
     [IP || {IP, _, _} <- Interfaces].
-
-%% @doc Returns
-build_opts(Port) ->
-    Transport_Configs = [[{reuseaddr, true}, {ip, IP}, {port, Port}] || IP <- get_ips()],
-    [{transport_config, T} || T <- Transport_Configs].
 
 ip_string() ->
     string:join([inet:ntoa(IP) || IP <- get_ips()], ",").

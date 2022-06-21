@@ -33,6 +33,7 @@
 %% ------------------------------------------------------------------
 -export([start_link/0]).
 -export([start/0, stop/0, terminate/2]).
+-export([trace/0, trace/1, timestamp/0]).
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
 %% ------------------------------------------------------------------
@@ -49,6 +50,7 @@
 -define(APP_ALIAS, ?MODULE).
 -define(CALLBACK_MOD, server_cb).
 -define(DIAMETER_DICT_CCRA, rfc4006_cc_Gy).
+%% @doc Service Definition
 %% The service configuration. In a server supporting multiple Diameter
 %% applications each application may have its own, although they could all
 %% be configured with a common callback module.
@@ -65,10 +67,9 @@
 init_metrics() ->
     {_, Port} =
         lists:keyfind(port, 1, application:get_env(prometheus, prometheus_http, 1234)),
-
-    lager:info(
-        "Initializing Prometheus Metrics on http://[nodeip]:~p/metrics~n",
-        [Port]
+    lager:notice(
+        "Initializing Prometheus Metrics on http://~s:~p/metrics~n",
+        [ip_string_notloopback(), Port]
     ),
     prometheus_counter:new([
         {name, dcca_mscc_interrogation},
@@ -111,33 +112,33 @@ init(State) ->
     listen({address, Proto, Port}),
     init_metrics(),
 
-    lager:info("Diameter DCCA Server ~s started on ~p IPs ~s, port ~p~n", [
+    lager:notice("Diameter DCCA Server ~s started on ~p IPs ~s, port ~p~n", [
         ?SERVER, Proto, ip_string(), Port
     ]),
     {ok, State}.
 
-%% @callback gen_server
+%% callback gen_server
 handle_call(_Req, _From, State) ->
     {noreply, State}.
 
-%% @callback gen_server
+%% callback gen_server
 handle_cast(stop, State) ->
     {stop, normal, State};
 handle_cast(_Req, State) ->
     {noreply, State}.
 
-%% @callback gen_server
+%% callback gen_server
 handle_info(_Info, State) ->
     {noreply, State}.
 
-%% @callback gen_server
+%% callback gen_server
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
-%% @callback gen_server
+%% callback gen_server
 terminate(normal, _State) ->
     diameter:stop_service(?SVC_NAME),
-    lager:info("Diameter DCCA Application stopped.~n"),
+    lager:notice("Diameter DCCA Application stopped.~n"),
     ok;
 terminate(shutdown, _State) ->
     ok;
@@ -159,10 +160,12 @@ listen(Name, {address, Protocol, Port}) ->
 listen(Address) ->
     listen(?SVC_NAME, Address).
 
+%% @doc Collects the list of IP addresses current node has.
 get_ips() ->
     {ok, Interfaces} = inet:getif(),
     [IP || {IP, _, _} <- Interfaces].
 
+%% @doc Returns
 build_opts(Port) ->
     Transport_Configs = [[{reuseaddr, true}, {ip, IP}, {port, Port}] || IP <- get_ips()],
     [{transport_config, T} || T <- Transport_Configs].
@@ -170,8 +173,34 @@ build_opts(Port) ->
 ip_string() ->
     string:join([inet:ntoa(IP) || IP <- get_ips()], ",").
 
-%% Convert connection type
+ip_string_notloopback() ->
+    inet:ntoa(lists:nth(1, lists:filter(fun(X) -> X =/= {127, 0, 0, 1} end, get_ips()))).
+
+%% @doc Convert connection type
 tmod(tcp) ->
     diameter_tcp;
 tmod(sctp) ->
     diameter_sctp.
+
+%% @doc shortcut to trace the server execution for 10 seconds
+trace() ->
+    trace(10).
+
+%% @doc traces the server execution for specific time in seconds
+%% @param Seconds :: integer()
+trace(Seconds) ->
+    lager:notice("Tracing started...~n"),
+    File = "flame-" ++ timestamp() ++ ".trace",
+    eflame2:write_trace(global_calls_plus_new_procs, File, all, Seconds * 1000),
+    eflame2:format_trace(File, File ++ ".out"),
+    file:delete(File),
+    lager:notice("Tracing finished!~n").
+
+%% @doc generate a timestamp in the format YYYY-MM-DDTHH:MM:SS
+timestamp() ->
+    {{Year, Month, Day}, {Hour, Minute, Second}} = calendar:now_to_datetime(erlang:timestamp()),
+    lists:flatten(
+        io_lib:format("~4..0w-~2..0w-~2..0wT~2..0w:~2..0w:~2..0w", [
+            Year, Month, Day, Hour, Minute, Second
+        ])
+    ).

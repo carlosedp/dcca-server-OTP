@@ -131,16 +131,16 @@ getSubscriptionId(_, []) ->
 
 %% Process MSCC
 process_mscc(ReqType, [MSCC | T], SessionData) ->
-    % lager:debug("Process_MSCC ~p~n", [MSCC]),
-    % lager:debug("Process_MSCC T ~p~n", [T]),
+    lager:debug("Process_MSCC ~p~n", [MSCC]),
+    lager:debug("Process_MSCC T ~p~n", [T]),
     #'Multiple-Services-Credit-Control'{
         'Used-Service-Unit' = USU,
         'Requested-Service-Unit' = RSU,
         'Service-Identifier' = [ServiceId],
         'Rating-Group' = [RatingGroup]
     } = MSCC,
-    % lager:debug("USU: ~w~n",[USU]),
-    % lager:debug("RSU: ~w~n",[RSU]),
+    lager:debug("USU: ~w~n", [USU]),
+    lager:debug("RSU: ~w~n", [RSU]),
     case {RSU, USU} of
         {[_], []} ->
             % Have RSU. No USU (First interrogation)
@@ -210,8 +210,8 @@ answer(err, ReqType, ReqNum, SessionId, OH, OR, []) ->
     }.
 
 mscc_answer([MSCC | T]) ->
-    % lager:debug("mscc_answer:~n"),
-    % lager:debug("MSCC: ~p~n",[MSCC]),
+    lager:debug("mscc_answer:~n"),
+    lager:debug("MSCC: ~p~n", [MSCC]),
     % lager:debug("T: ~w~n",[T]),
     {ServiceId, RatingGroup, GrantedUnits, _ResultCode} = MSCC,
     [
@@ -238,9 +238,3 @@ mscc_answer([MSCC | T]) ->
     ];
 mscc_answer([]) ->
     [].
-
-%% Internal Functions
-
-% Check list. If null, return zero, else return value.
-% checkNullList([X]) -> X;
-% checkNullList([]) -> 0.

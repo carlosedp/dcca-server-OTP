@@ -14,18 +14,17 @@ To start the module in a shell use:
 
 Or use the provided Makefile:
 
-    make
     make shell
 
 ![image](img/shell.png)
 
-To **exit**, type Ctrl+G to call the Erlang shell followed by the command "q".
+To **exit**, type `Ctrl+G` to call the Erlang shell followed by the command "q".
 
-The server also contains a flamegraph style tracer that can be called using `dccaserver:trace().` from the console (Erlang shell) that will collect data for a specified time in seconds (10 seconds). There is also a `dccaserver:trace(15).` function that accepts the amount of collection time in seconds.
+The server also contains a flamegraph style tracer that can be called using `dccaserver:trace().` from the console (Erlang shell) that will collect data for 10 seconds. There is also a `dccaserver:trace(Integer).` function that accepts the amount of collection time in seconds.
 
 ![image](img/flame.png)
 
-The tracer will generate a `.out` file that can be converted to an SVG file with `cat flame-xxxxx.trace.out|grep -v lager | ./_build/default/lib/eflame/flamegraph.riak-color.pl > flame.svg` or opened on a flamegraph viewer website like <https://www.speedscope.app/>. To filter out function calls like from Lager, one can `cat flamexxx.trace.out | grep -v lager > flamexxx-nolager.out` and then open in the flamegraph viewer or generate the SVG.
+The tracer will generate a `.out` file that can be converted to an SVG file with `cat flame-xxxxx.trace.out|grep -v lager | ./_build/default/lib/eflame/flamegraph.riak-color.pl > flame.svg` (for example filtering-out lager calls) or opened on a flamegraph viewer website like <https://www.speedscope.app/>.
 
 A release is also available and built with the commands below. To load the application use:
 
@@ -41,7 +40,7 @@ To create a release and a tar.gz archive for production with erts included:
 
 ## Monitoring and Running on Docker
 
-The server exposes Prometheus metrics for the BEAM VM and the application at <http://localhost:9000/metrics>. There are some BEAM dashboards for Grafana available at <https://github.com/deadtrickster/beam-dashboards>.
+The server exposes Prometheus metrics for the BEAM VM and the application at <http://localhost:9000/metrics>. There are some  Grafana dashboards included that were sourced from <https://github.com/deadtrickster/beam-dashboards>.
 
 ![image](img/monitoring.png)
 
@@ -68,13 +67,11 @@ diameter_messages{svc="dccaserver",peer="example.com",direction="send",type="req
 # HELP diameter_errors Number of errors.
 ```
 
-The complete stack with the server application, Prometheus and Grafana can be built and started with:
+You can run the complete application stack with the DCCA server, Prometheus and Grafana on Docker containers with:
 
 ```sh
 make stack
 ```
-
-This will build the containers and start all applications.
 
 Prometheus will be accessible at <http://localhost:9090/metrics> and Grafana at <http://localhost:3000>. Login with "admin/admin" and load the dashboards from "Erlang/DCCA" folder.
 

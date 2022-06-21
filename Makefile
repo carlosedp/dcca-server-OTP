@@ -115,4 +115,7 @@ docker-run:
 	docker run -d -p 3868:3868 -p 9000:9000 --name $(APP) $(DOCKERREPO)/$(APP)
 
 stack:
-	docker-compose up -d
+	docker-compose up --build -d
+
+seagull-test:
+	docker run -it --rm -v $(PWD):/src -w /src docker.io/carlosedp/docker-seagull ./gprs.sh

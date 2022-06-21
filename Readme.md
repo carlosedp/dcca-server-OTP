@@ -1,4 +1,4 @@
-# Erlang Diameter Credit Control Application
+# Erlang Diameter Credit Control Server Application
 
 This repository contains an example OTP DCCA application server built in Erlang.
 
@@ -17,7 +17,33 @@ Or use the provided Makefile:
     make
     make shell
 
+![image](img/shell.png)
+
+To **exit**, type Ctrl+G to call the Erlang shell followed by the command "q".
+
+The server also contains a flamegraph style tracer that can be called using `dccaserver:trace().` from the console (Erlang shell) that will collect data for a specified time in seconds (10 seconds). There is also a `dccaserver:trace(15).` function that accepts the amount of collection time in seconds.
+
+![image](img/flame.png)
+
+The tracer will generate a `.out` file that can be converted to an SVG file with `cat flame-xxxxx.trace.out|grep -v lager | ./_build/default/lib/eflame/flamegraph.riak-color.pl > flame.svg` or opened on a flamegraph viewer website like <https://www.speedscope.app/>. To filter out function calls like from Lager, one can `cat flamexxx.trace.out | grep -v lager > flamexxx-nolager.out` and then open in the flamegraph viewer or generate the SVG.
+
+A release is also available and built with the commands below. To load the application use:
+
+    rebar3 release
+    ./_build/default/rel/dccaserver/bin/dccaserver console
+
+To create a release and a tar.gz archive for production with erts included:
+
+    rebar3 as prod release
+
+    ./_build/prod/rel/dccaserver/bin/dccaserver console
+    rebar3 as prod tar
+
+## Monitoring and Running on Docker
+
 The server exposes Prometheus metrics for the BEAM VM and the application at <http://localhost:9000/metrics>. There are some BEAM dashboards for Grafana available at <https://github.com/deadtrickster/beam-dashboards>.
+
+![image](img/monitoring.png)
 
 Sample metrics:
 
@@ -42,19 +68,15 @@ diameter_messages{svc="dccaserver",peer="example.com",direction="send",type="req
 # HELP diameter_errors Number of errors.
 ```
 
-To exit, type Ctrl+G to call the Erlang shell followed by the command "q".
+The complete stack with the server application, Prometheus and Grafana can be built and started with:
 
-A release is also available and built with the commands below. To load the application use:
+```sh
+make stack
+```
 
-    rebar3 release
-    ./_build/default/rel/dccaserver/bin/dccaserver console
+This will build the containers and start all applications.
 
-To create a release and a tar.gz archive for production with erts included:
-
-    rebar3 as prod release
-
-    ./_build/prod/rel/dccaserver/bin/dccaserver console
-    rebar3 as prod tar
+Prometheus will be accessible at <http://localhost:9090/metrics> and Grafana at <http://localhost:3000>. Login with "admin/admin" and load the dashboards from "Erlang/DCCA" folder.
 
 ## Testing
 
@@ -62,8 +84,10 @@ To test the server, use the client module from project [dcca-client-OTP](https:/
 
 ### Client (dcca-client-OTP)
 
-If using the client sample application, clone the repository lined above and inside it run:
+If using the client sample application, clone the repository linked above and inside it run:
 
+    git clone https://github.com/carlosedp/dcca-client-OTP
+    cd dcca-client-OTP
     make shell
     dccaclient:test().
 
@@ -71,6 +95,8 @@ If using the client sample application, clone the repository lined above and ins
 
 Seagull can be used to generate Diameter traffic to the server. The configuration, scenario xml and start scripts are in `test/seagull` dir.
 
-The application can be downloaded from [http://gull.sourceforge.net/doc/](http://gull.sourceforge.net/doc/) and put in the path.
+Test can be run with `make seagull` that will use Docker with the application and the test configs provided here. Before running, adjust the server IP in the `conf_GPRS.xml` file.
+
+Also the application can be installed from [http://gull.sourceforge.net/doc/](http://gull.sourceforge.net/doc/).
 
 

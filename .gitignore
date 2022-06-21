@@ -19,10 +19,12 @@ ebin
 log
 doc
 tmp
+.vscode
 
 # Dumps
 erl_crash.dump
 rebar3.crashdump
+flame-*
 
 # Generated files
 apps/dccaserver/src/rfc4006_cc_Gy.erl

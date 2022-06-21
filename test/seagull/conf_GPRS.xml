@@ -2,49 +2,27 @@
 
 <configuration name="IP Client Conf">
 	<!-- <include file="conf_trans.xml"></include> -->
-	<define entity="transport" name="trans-1" file="libtrans_ip.so" create_function="create_cipio_instance" delete_function="delete_cipio_instance" init-args="type=tcp">
-	</define>
-	<define entity="channel" name="channel-1" global="yes" protocol="diameter-v1" transport="trans-1" open-args="mode=client;dest=127.0.0.1:3868">
-	</define>
+	<define entity="transport" name="trans-1" file="libtrans_ip.so" create_function="create_cipio_instance" delete_function="delete_cipio_instance" init-args="type=tcp"></define>
+	<define entity="channel" name="channel-1" global="yes" protocol="diameter-v1" transport="trans-1" open-args="mode=client;dest=127.0.0.1:3868"></define>
 	<!-- <include file="conf_para.xml"></include> -->
-	<define entity="traffic-param" name="call-rate" value="4">
-	</define>
-	<define entity="traffic-param" name="call-rate-scale" value="1000">
-	</define>
-	<define entity="traffic-param" name="number-calls" value="1">
-	</define>
-	<define entity="traffic-param" name="max-simultaneous-calls" value="50">
-	</define>
-	<define entity="traffic-param" name="call-timeout-ms" value="6000">
-	</define>
-	<define entity="traffic-param" name="select-timeout-ms" value="50">
-	</define>
-	<define entity="traffic-param" name="call-timeout-behaviour-abort" value="true">
-	</define>
-	<define entity="traffic-param" name="max-send" value="10000">
-	</define>
-	<define entity="traffic-param" name="max-receive" value="10000">
-	</define>
-	<define entity="traffic-param" name="burst-limit" value="5">
-	</define>
-	<define entity="traffic-param" name="model-traffic-select" value="poisson">
-	</define>
-	<define entity="traffic-param" name="response-time-repartition" value="50,100,250,500,1000,3000,6000">
-	</define>
-	<define entity="traffic-param" name="display-period" value="5">
-	</define>
-	<define entity="traffic-param" name="display-scenario-stat" value="true">
-	</define>
-	<define entity="traffic-param" name="display-protocol-stat" value="true">
-	</define>
-	<define entity="traffic-param" name="log-stat-period" value="10">
-	</define>
-	<define entity="traffic-param" name="log-stat-file" value="stat/stat.csv">
-	</define>
-	<define entity="traffic-param" name="data-log-period" value="10">
-	</define>
-	<define entity="traffic-param" name="data-log-file" value="stat/rtt.csv">
-	</define>
-	<define entity="traffic-param" name="data-log-rtdistrib" value="2000">
-	</define>
-</configuration>
+	<define entity="traffic-param" name="call-rate" value="4"></define>
+	<define entity="traffic-param" name="call-rate-scale" value="1000"></define>
+	<define entity="traffic-param" name="number-calls" value="1"></define>
+	<define entity="traffic-param" name="max-simultaneous-calls" value="50"></define>
+	<define entity="traffic-param" name="call-timeout-ms" value="6000"></define>
+	<define entity="traffic-param" name="select-timeout-ms" value="50"></define>
+	<define entity="traffic-param" name="call-timeout-behaviour-abort" value="true"></define>
+	<define entity="traffic-param" name="max-send" value="10000"></define>
+	<define entity="traffic-param" name="max-receive" value="10000"></define>
+	<define entity="traffic-param" name="burst-limit" value="5"></define>
+	<define entity="traffic-param" name="model-traffic-select" value="poisson"></define>
+	<define entity="traffic-param" name="response-time-repartition" value="50,100,250,500,1000,3000,6000"></define>
+	<define entity="traffic-param" name="display-period" value="5"></define>
+	<define entity="traffic-param" name="display-scenario-stat" value="true"></define>
+	<define entity="traffic-param" name="display-protocol-stat" value="true"></define>
+	<define entity="traffic-param" name="log-stat-period" value="10"></define>
+	<define entity="traffic-param" name="log-stat-file" value="stat/stat.csv"></define>
+	<define entity="traffic-param" name="data-log-period" value="10"></define>
+	<define entity="traffic-param" name="data-log-file" value="stat/rtt.csv"></define>
+	<define entity="traffic-param" name="data-log-rtdistrib" value="2000"></define>
+	</configuration>

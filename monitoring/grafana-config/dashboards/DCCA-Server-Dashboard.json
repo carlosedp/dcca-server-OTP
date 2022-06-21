@@ -24,7 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1655147837969,
+  "iteration": 1655827797792,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -417,7 +417,8 @@
               "options": {
                 "match": "null",
                 "result": {
-                  "text": "N/A"
+                  "index": 0,
+                  "text": "0"
                 }
               },
               "type": "special"
@@ -974,44 +975,7 @@
           },
           "unit": "short"
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Open Transactions"
-            },
-            "properties": [
-              {
-                "id": "custom.axisLabel",
-                "value": "txns"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Aborted Transactions Total"
-            },
-            "properties": [
-              {
-                "id": "custom.axisLabel",
-                "value": "txns"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Finished Transactions Total"
-            },
-            "properties": [
-              {
-                "id": "custom.axisLabel",
-                "value": "txns"
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 7,
@@ -2109,7 +2073,7 @@
                   }
                 ]
               },
-              "unit": "dtdurationms"
+              "unit": "s"
             },
             "overrides": []
           },
@@ -2125,7 +2089,7 @@
             "orientation": "auto",
             "reduceOptions": {
               "calcs": [
-                "last"
+                "lastNotNull"
               ],
               "fields": "",
               "values": false
@@ -2140,9 +2104,13 @@
                 "type": "prometheus",
                 "uid": "P1809F7CD0C75ACF3"
               },
-              "expr": "telemetry_scrape_duration_seconds",
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "scrape_duration_seconds{instance=\"$node\"}",
+              "instant": true,
               "intervalFactor": 2,
               "legendFormat": "scrape time",
+              "range": false,
               "refId": "A",
               "step": 2
             }
@@ -2539,7 +2507,7 @@
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {

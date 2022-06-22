@@ -29,9 +29,10 @@
     {applications, [
         kernel,
         stdlib,
-        lager,
         sasl,
         diameter,
+        lager,
+        eflame,
         prometheus,
         prometheus_process_collector,
         prometheus_diameter_collector,

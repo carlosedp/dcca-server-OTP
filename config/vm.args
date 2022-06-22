@@ -1,8 +1,8 @@
-## Name of the node
--sname dccaserver-OTP
+## Node name
+-name <%= release_name %>@${HOSTNAME}
 
-## Cookie for distributed erlang
--setcookie dccaserver-OTP_cookie
+## Node cookie, used for distribution
+-setcookie ${NODE_COOKIE}
 
 ## Enable kernel poll and a few async threads
 +K true
@@ -13,3 +13,6 @@
 
 ## Tweak GC to run more often
 ##-env ERL_FULLSWEEP_AFTER 10
+
+# Enable SMP automatically based on availability
+-smp auto

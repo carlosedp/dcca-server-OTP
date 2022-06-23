@@ -6,13 +6,12 @@ services:
       - "3868:3868"
       - "9000:9000"
     container_name: dcca-server-1
-    environment:
-      projectname: dccaserver
     image: carlosedp/dcca-server-otp:latest
     build:
       context: .
       args:
-        projectname: dccaserver
+        PROJECT: dccaserver
+        OTP_VERSION: 25
 
   prometheus:
     container_name: prometheus

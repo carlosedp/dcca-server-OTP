@@ -1,5 +1,5 @@
 ## Node name
--name dccaserver@server1
+-sname dccaserver
 
 ## Node cookie, used for distribution
 -setcookie dccaserver-cookie

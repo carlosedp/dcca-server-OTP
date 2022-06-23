@@ -3,11 +3,7 @@ DOCKERREPO			= carlosedp
 APPS				:= $(shell ls apps)
 REL_DIR				= _build/default/rel
 APP_FILES = $(wildcard apps/*/*) $(wildcard config/*)
-
-REBAR3_URL=https://s3.amazonaws.com/rebar3/rebar3
-ifeq ($(wildcard rebar3),rebar3)
-REBAR3 = $(CURDIR)/rebar3
-endif
+ERL_FLAGS = "-args_file config/vm.args -config config/sys.config"
 
 UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
@@ -18,19 +14,8 @@ GET_IP="ifconfig"
 endif
 INTERFACE_IP=$(shell ${GET_IP} | grep "inet " | grep -Fv 127.0.0.1 | cut -d/ -f1  | awk '{print $$2}' |head -1)
 
+REBAR3_URL=https://s3.amazonaws.com/rebar3/rebar3
 REBAR3 ?= $(shell test -e `which rebar3` 2>/dev/null && which rebar3 || echo "./rebar3")
-
-ifeq ($(REBAR3),)
-REBAR3 = $(CURDIR)/rebar3
-endif
-
-ifeq ($(OS),Windows_NT)
-		ERL ?= werl
-		RELEASE_SCRIPT  := $(REL_DIR)/$(APP)/bin/$(APP).cmd
-else
-		ERL ?= erl
-		RELEASE_SCRIPT  := $(REL_DIR)/$(APP)/bin/$(APP)
-endif
 
 .PHONY: all compile clean distclean cleanall test rel prod doc
 
@@ -85,10 +70,7 @@ fmt:
 
 shell: compile
 	@echo "Running $(APP) shell"
-	@$(REBAR3) shell
-
-wshell: compile
-	$(ERL) -args_file config/vm.args -config config/sys.config -pa _build/default/lib/*/ebin --boot start_sasl -s $(APP)
+	@ERL_FLAGS=${ERL_FLAGS} $(REBAR3) shell
 
 ##
 ## Release commands
@@ -124,10 +106,10 @@ reboot: $(RELEASE_SCRIPT)
 ## Docker and testing commands
 ##
 docker:
-	docker build -t $(DOCKERREPO)/$(APP) --build-arg projectname=$(APP) .
+	docker build -t $(DOCKERREPO)/dcca-server-otp --build-arg PROJECT=$(APP) .
 
 docker-run:
-	docker run -d -p 3868:3868 -p 9000:9000 --name $(APP) $(DOCKERREPO)/$(APP)
+	docker run -d -p 3868:3868 -p 9000:9000 --name dcca-server-otp $(DOCKERREPO)/dcca-server-otp
 
 stack:
 	docker-compose up --build -d

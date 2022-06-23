@@ -1,5 +1,7 @@
+ARG application=dccaserver
 # Build stage 0
 FROM erlang:25-alpine as builder
+ARG application
 
 # Install some libs
 RUN apk add --no-cache ncurses-libs && \
@@ -13,10 +15,13 @@ WORKDIR /buildroot
 ADD . /buildroot
 
 # Build the release
-RUN make prod
+RUN make tar && \
+    mkdir -p /opt/rel/${application} && \
+    tar vxf /buildroot/_build/prod/rel/*/*.tar.gz -C /opt/rel/${application}
 
 # Production container
 FROM alpine as prod
+ARG application
 
 # Install some libs
 RUN apk add --no-cache openssl && \
@@ -24,7 +29,7 @@ RUN apk add --no-cache openssl && \
     apk add --no-cache libstdc++
 
 # Install the released application
-COPY --from=builder /buildroot/_build/prod/rel/dccaserver /opt/dccaserver
+COPY --from=builder /opt/rel/${application} /opt/
 
 # Expose relevant ports
 EXPOSE 3868 9000

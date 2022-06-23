@@ -69,8 +69,8 @@ init_metrics() ->
     {_, Port} =
         lists:keyfind(port, 1, application:get_env(prometheus, prometheus_http, 1234)),
     lager:notice(
-        "Initializing Prometheus Metrics on http://~s:~p/metrics~n",
-        [ip_string_notloopback(), Port]
+        "Initializing Prometheus Metrics on http://0.0.0.0:~p/metrics~n",
+        [Port]
     ),
     prometheus_counter:new([
         {name, dcca_mscc_interrogation},
@@ -173,9 +173,6 @@ get_ips() ->
 
 ip_string() ->
     string:join([inet:ntoa(IP) || IP <- get_ips()], ",").
-
-ip_string_notloopback() ->
-    inet:ntoa(lists:nth(1, lists:filter(fun(X) -> X =/= {127, 0, 0, 1} end, get_ips()))).
 
 %% @doc Convert connection type
 tmod(tcp) ->

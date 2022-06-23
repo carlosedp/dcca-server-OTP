@@ -40,6 +40,9 @@ compile: $(REBAR3) deps
 	@echo "Building application"
 	@$(REBAR3) compile
 
+check-deps:
+	@$(REBAR3) update-deps
+
 deps:
 	@$(REBAR3) upgrade --all
 

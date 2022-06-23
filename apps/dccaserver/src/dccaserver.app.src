@@ -32,6 +32,7 @@
         sasl,
         diameter,
         lager,
+        systemd,
         eflame,
         prometheus,
         prometheus_process_collector,

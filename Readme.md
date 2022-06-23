@@ -75,6 +75,27 @@ make stack
 
 Prometheus will be accessible at <http://localhost:9090/metrics> and Grafana at <http://localhost:3000>. Login with "admin/admin" and load the dashboards from "Erlang/DCCA" folder.
 
+## Systemd service
+
+For production deployments, if running on Systemd is preferred, build the application `tar.gz`, install to /opt/dccaserver and copy the systemd service file.
+
+```bash
+# Build application .tar.gz
+make tar
+# copy to target host
+scp _build/prod/rel/dccaserver/dccaserver-1.0.0.tar.gz user@host:
+
+# On target host
+mkdir /opt/dccaserver
+pushd /opt/dccaserver
+tar vxf ~/dccaserver-1.0.0.tar.gz # point to correct path
+popd
+cp dccaserver.service /etc/systemd/system
+systemctl daemon-reload
+systemctl enable dccaserver # to enable start on boot
+systemctl start dccaserver
+```
+
 ## Testing
 
 To test the server, use the client module from project [dcca-client-OTP](https://github.com/carlosedp/dcca-client-OTP) or Seagull with included files.

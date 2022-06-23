@@ -1,0 +1,28 @@
+[Unit]
+Description=Erlang Diameter DCCA Server
+
+[Service]
+#User=appuser
+#Group=appgroup
+
+# This will allow using `systemd:notify/1` for informing the system supervisor
+# about application status.
+Type=notify
+
+# Application need to start in foreground instead of forking into background,
+# otherwise it may be not correctly detected and system will try to start it
+# again.
+ExecStart=/opt/dccaserver/bin/dccaserver foreground
+
+# Enable watchdog process, which will expect messages in given timeframe,
+# otherwise it will restart the process as a defunct. It should be managed
+# automatically by `systemd` application in most cases and will send messages
+# twice as often as requested.
+#
+# You can force failure by using `systemd:watchdog(trigger)` or manually ping
+# systemd watchdog via `systemd:watchdog(ping)`.
+WatchdogSec=10s
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

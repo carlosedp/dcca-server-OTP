@@ -24,9 +24,9 @@ RUN apk add --no-cache openssl && \
     apk add --no-cache libstdc++
 
 # Install the released application
-COPY --from=builder /buildroot/_build/prod/rel/dccaserver /dccaserver
+COPY --from=builder /buildroot/_build/prod/rel/dccaserver /opt/dccaserver
 
 # Expose relevant ports
 EXPOSE 3868 9000
 
-CMD ["/dccaserver/bin/dccaserver", "foreground"]
+CMD ["/opt/dccaserver/bin/dccaserver", "foreground"]

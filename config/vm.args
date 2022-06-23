@@ -1,8 +1,8 @@
 ## Node name
--name <%= release_name %>@${HOSTNAME}
+-name dccaserver@server1
 
 ## Node cookie, used for distribution
--setcookie ${NODE_COOKIE}
+-setcookie dccaserver-cookie
 
 ## Enable kernel poll and a few async threads
 +K true

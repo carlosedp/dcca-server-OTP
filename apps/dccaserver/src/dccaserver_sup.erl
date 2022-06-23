@@ -39,7 +39,14 @@ start_link() ->
 %%%.
 %%%'   CALLBACKS
 init([]) ->
-    prometheus_httpd:start(),
-    DiaServer =
+    SupFlags = #{
+        strategy => one_for_one,
+        intensity => 5,
+        period => 10
+    },
+    Children = [
         {dccaserver, {dccaserver, start_link, []}, permanent, 5000, worker, [server_cb]},
-    {ok, {{one_for_one, 5, 10}, [DiaServer]}}.
+        systemd:ready()
+    ],
+
+    {ok, {SupFlags, Children}}.

@@ -65,6 +65,7 @@
 
 %% Application Prometheus Metrics
 init_metrics() ->
+    prometheus_httpd:start(),
     {_, Port} =
         lists:keyfind(port, 1, application:get_env(prometheus, prometheus_http, 1234)),
     lager:notice(

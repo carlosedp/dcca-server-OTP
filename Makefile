@@ -1,9 +1,11 @@
 APP					= dccaserver
 DOCKERREPO			= carlosedp
 APPS				:= $(shell ls apps)
+SYSTEMD_TARGET 		?= /etc/systemd/system/
+UNITS				= $(notdir $(wildcard systemd/*))
 REL_DIR				= _build/default/rel
-APP_FILES = $(wildcard apps/*/*) $(wildcard config/*)
-ERL_FLAGS = "-args_file config/vm.args -config config/sys.config"
+APP_FILES 			= $(wildcard apps/*/*) $(wildcard config/*)
+ERL_FLAGS 			= "-args_file config/vm.args -config config/sys.config"
 
 UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
@@ -101,6 +103,31 @@ restart: $(RELEASE_SCRIPT)
 
 reboot: $(RELEASE_SCRIPT)
 	@./$(RELEASE_SCRIPT) reboot || true
+
+##
+## Linux installation with systemd
+##
+install: install-rel systemd-install
+
+install-rel: tar
+	sudo mkdir -p /opt/${APP}
+	sudo tar vxf _build/prod/rel/*/*.tar.gz -C /opt/${APP}
+	sudo chown -R root:root /opt/${APP}
+
+systemd-install:
+	@sudo mkdir -p ${SYSTEMD_TARGET}
+	sudo cp -f systemd/* ${SYSTEMD_TARGET}
+	@sudo chmod 644 $(addprefix ${SYSTEMD_TARGET}/,${UNITS})
+	@sudo systemctl daemon-reload
+	sudo systemctl enable ${UNITS}
+	sudo systemctl stop ${UNITS}
+	@echo "Systemd service installed and enabled on boot."
+
+uninstall:
+	@sudo systemctl stop ${UNITS}
+	-sudo rm $(addprefix ${SYSTEMD_TARGET}/,${UNITS})
+	-sudo rm -rf /opt/${APP}
+	@sudo systemctl daemon-reload
 
 ##
 ## Docker and testing commands

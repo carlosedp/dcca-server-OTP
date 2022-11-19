@@ -112,7 +112,6 @@ init(State) ->
     Proto = application:get_env(?SERVER, diameter_proto, tcp),
     listen({address, Proto, Port}),
     init_metrics(),
-
     lager:notice("Diameter DCCA Server ~s started on ~p IPs ~s, port ~p~n", [
         ?SERVER, Proto, ip_string(), Port
     ]),

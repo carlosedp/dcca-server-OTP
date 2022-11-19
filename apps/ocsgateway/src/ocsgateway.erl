@@ -173,6 +173,4 @@ code_change(_OldVsn, State, _Extra) ->
 timestamp([{{YY, MM, DD}, {Hour, Min, Sec}}]) ->
     io_lib:format("~4..0w~2..0w~2..0w~2..0w~2..0w~2..0w", [YY, MM, DD, Hour, Min, Sec]);
 timestamp([]) ->
-    {YY, MM, DD} = date(),
-    {Hour, Min, Sec} = time(),
-    io_lib:format("~4..0w~2..0w~2..0w~2..0w~2..0w~2..0w", [YY, MM, DD, Hour, Min, Sec]).
+    timestamp([{date(), time()}]).

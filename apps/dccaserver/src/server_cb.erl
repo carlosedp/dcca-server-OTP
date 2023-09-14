@@ -75,6 +75,7 @@ handle_request(#diameter_packet{msg = Req, errors = []}, _SvcName, {_, Caps}) wh
         'Session-Id' = SessionId,
         'Auth-Application-Id' = ?DCCA_APPLICATION_ID,
         'CC-Request-Type' = ReqType,
+        'Framed-IP-Address' = FramedIP,
         'CC-Request-Number' = ReqNum,
         % 'Service-Context-Id' = ServiceContextId,
         'Event-Timestamp' = EventTimestamp,
@@ -86,8 +87,8 @@ handle_request(#diameter_packet{msg = Req, errors = []}, _SvcName, {_, Caps}) wh
     MSISDN = getSubscriptionId(?MSISDN, Subscription),
     IMSI = getSubscriptionId(?IMSI, Subscription),
     lager:info(
-        "{RequestType, ~p}:{RequestNumber, ~p}:{CCR, ~p}:{MSCC, ~p}",
-        [ReqType, ReqNum, lager:pr(Req, ?MODULE), lager:pr(MSCC, ?MODULE)]
+        "{RequestType, ~p}:{RequestNumber, ~p}:{Framed-IP-Adress, ~p}:{CCR, ~p}:{MSCC, ~p}",
+        [ReqType, ReqNum, FramedIP, lager:pr(Req, ?MODULE), lager:pr(MSCC, ?MODULE)]
     ),
     MSCC_Data =
         process_mscc(ReqType, MSCC, {APN, IMSI, MSISDN, "10.0.0.1", SessionId, EventTimestamp}),
@@ -102,13 +103,14 @@ handle_request(#diameter_packet{msg = Req, errors = Err}, _SvcName, {_, Caps}) w
     #'CCR'{
         'Session-Id' = SessionId,
         'CC-Request-Type' = ReqType,
+        'Framed-IP-Address' = FramedIP,
         'CC-Request-Number' = ReqNum,
         'Multiple-Services-Credit-Control' = MSCC
     } = Req,
     lager:info(
-        "{RequestType, ~p}:{RequestNumber, ~p}:{Error, ~p}:{CCR, ~p}:{MSCC, "
+        "{RequestType, ~p}:{RequestNumber, ~p}:{Framed-IP-Adress, ~p}:{Error, ~p}:{CCR, ~p}:{MSCC, "
         "~p}",
-        [ReqType, ReqNum, Err, lager:pr(Req, ?MODULE), lager:pr(MSCC, ?MODULE)]
+        [ReqType, ReqNum, FramedIP, Err, lager:pr(Req, ?MODULE), lager:pr(MSCC, ?MODULE)]
     ),
     {reply, answer(err, ReqType, ReqNum, SessionId, OH, OR, [])};
 %% Should really reply to other base messages that we don't support
